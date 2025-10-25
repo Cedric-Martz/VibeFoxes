@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vibe Ancient Brain — Vibe Coding Playground</title>
+<style>
+  body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; padding:0; display:flex; height:100vh; }
+  .left { width:44%; min-width:360px; padding:18px; border-right:1px solid #ddd; overflow:auto; }
+  .right { flex:1; padding:12px; display:flex; flex-direction:column; gap:8px; }
+  h1 { margin:0 0 12px 0; font-size:20px; }
+  textarea { width:100%; height:120px; font-family:monospace; font-size:14px; }
+  .row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  button { padding:8px 10px; border-radius:6px; border:1px solid #bbb; background:#fff; cursor:pointer; }
+  .log { height:220px; overflow:auto; border:1px solid #eee; padding:8px; background:#fafafa; font-family:monospace; font-size:13px; }
+  label { font-size:13px; }
+  .iframe-wrap { border:1px solid #ccc; flex:1; border-radius:6px; overflow:hidden; }
+  iframe { width:100%; height:100%; border:0; }
+  .small { font-size:12px; color:#666; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; }
+  .saved-list { max-height:120px; overflow:auto; border:1px dashed #ddd; padding:6px; background:#fff; }
+  .chip { display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid #ddd; margin:4px; cursor:pointer; background:#f8f8ff; }
+</style>
+</head>
+<body>
+  <div class="left">
+    <h1>Vibe Ancient Brain — talk to build JS</h1>
+    <div class="small">Type English instructions for the program you want. The model will reply with JavaScript that will run in the right pane.</div>
+
+    <div style="margin-top:12px;">
+      <label>Instruction (English):</label>
+      <textarea id="userInput" placeholder="E.g. 'Create a particle system where particles are attracted to the mouse and change color over time.'"></textarea>
+    </div>
+
+    <div class="row controls">
+      <button id="askBtn">Ask Model → Generate</button>
+      <button id="appendBtn">Append & Edit (keep conversation)</button>
+      <button id="scepticBtn">Sceptic / Debug (find bugs)</button>
+      <button id="runBtn">Run current code</button>
+      <button id="clearConv">Clear conversation</button>
+      <div style="flex:1"></div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label>Backend:</label>
+      <select id="backend">
+        <option value="transformers">Transformers.js (browser — free)</option>
+        <option value="hf">Hugging Face Inference API (token required)</option>
+      </select>
+    </div>
+
+    <div id="hfSettings" style="margin-top:8px; display:none;">
+      <label>Hugging Face token (paste here for API use) — keep private:</label>
+      <input id="hfToken" style="width:100%; font-family:monospace" placeholder="hf_xxx..." />
+      <div class="small">If you leave this blank and backend=HF, you'll be asked before use. Do not share the token publicly.</div>
+    </div>
+
+    <hr/>
+    <div>
+      <label>Conversation log (you ↔ AI):</label>
+      <div id="conversation" class="log"></div>
+    </div>
+
+    <hr/>
+    <div>
+      <label>Saved creations (localStorage):</label>
+      <div class="saved-list" id="savedList"></div>
+      <div style="margin-top:8px;">
+        <input id="saveName" placeholder="name to save current code" style="font-family:monospace"/>
+        <button id="saveBtn">Save</button>
+        <button id="exportBtn">Export JSON</button>
+      </div>
+    </div>
+
+    <hr/>
+    <div class="small">Tips: Use short iterative English prompts. If something breaks, use Sceptic Mode to ask the model to find likely bugs and propose a fix.</div>
+  </div>
+
+  <div class="right">
+    <div class="row">
+      <div style="flex:1">
+        <label>Generated JS (editable):</label>
+        <textarea id="generatedCode" placeholder="// The AI will return JS code here"></textarea>
+      </div>
+      <div style="width:260px;">
+        <label>Quick templates</label>
+        <div>
+          <div class="chip" data-snippet="draw bouncing balls with random colors and mouse attractor">Bouncing balls + attractor</div>
+          <div class="chip" data-snippet="simple to-do list UI with add/remove items and localStorage persistence">To-do UI</div>
+          <div class="chip" data-snippet="particle system using canvas with attraction to mouse pointer">Particle system</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px; align-items:center;">
+      <label style="width:120px">Sandbox Output:</label>
+      <div class="small">(iframe — generated code executes here)</div>
+      <div style="flex:1"></div>
+      <div class="small">Model used: <span id="modelName">unknown</span></div>
+    </div>
+
+    <div class="iframe-wrap">
+      <iframe id="sandbox" sandbox="allow-scripts"></iframe>
+    </div>
+  </div>
+
+<script>
+/*
+  Vibe Ancient Brain — single-file app.
+  Strategy:
+   - conversation[] keeps messages
+   - buildPrompt() builds a long prompt instructing model to reply with JS only
+   - backend: transformers.js (if available) OR HF Inference API (fetch)
+   - generated code is placed in generatedCode and can be run in sandbox iframe
+*/
+
+const conversationEl = document.getElementById('conversation');
+const generatedCodeEl = document.getElementById('generatedCode');
+const userInputEl = document.getElementById('userInput');
+const askBtn = document.getElementById('askBtn');
+const appendBtn = document.getElementById('appendBtn');
+const scepticBtn = document.getElementById('scepticBtn');
+const runBtn = document.getElementById('runBtn');
+const clearConvBtn = document.getElementById('clearConv');
+const backendSelect = document.getElementById('backend');
+const hfSettings = document.getElementById('hfSettings');
+const hfTokenEl = document.getElementById('hfToken');
+const saveBtn = document.getElementById('saveBtn');
+const saveName = document.getElementById('saveName');
+const savedList = document.getElementById('savedList');
+const exportBtn = document.getElementById('exportBtn');
+const modelNameEl = document.getElementById('modelName');
+
+let conversation = []; // {role:'user'|'assistant'|'system', content: '...'}
+let currentModel = 'browser-gpt2'; // informational
+
+// Load saved list
+function refreshSaved() {
+  savedList.innerHTML = '';
+  const names = Object.keys(localStorage).filter(k=>k.startsWith('vibe_'));
+  names.forEach(k=>{
+    const name = k.slice(5);
+    const div = document.createElement('div');
+    div.textContent = name;
+    div.className = 'chip';
+    div.onclick = ()=> {
+      const data = JSON.parse(localStorage.getItem(k));
+      generatedCodeEl.value = data.code || '';
+      alert('Restored: ' + name);
+    };
+    savedList.appendChild(div);
+  });
+}
+refreshSaved();
+
+// add small helper to append to log
+function logConv(role, text) {
+  conversation.push({role, content:text});
+  const p = document.createElement('div');
+  p.innerHTML = `<b>${role}</b>: <pre style="display:inline-block;margin:0">${escapeHtml(text)}</pre>`;
+  conversationEl.appendChild(p);
+  conversationEl.scrollTop = conversationEl.scrollHeight;
+}
+
+function escapeHtml(s){ return s.replace(/[&<>]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[c])); }
+
+// Build a controlled prompt to ask the model to return JS code only
+function buildPrompt(userInstruction, mode='generate') {
+  // mode: generate | sceptic
+  const system = `
+You are "Ancient Brain (Vibe Mode)" — an assistant that outputs JavaScript code only (no commentary).
+Constraints:
+1) Output must be valid JavaScript code that can run in a browser.
+2) Wrap visible content creation in a top-level function ` + "`run()`" + ` so the host can execute it by calling run().
+3) The code must not attempt to access parent window or cookies. Use only DOM, Canvas, WebAudio, WebGL, localStorage, or fetch to public APIs.
+4) If asked to produce UI, keep CSS inline or create elements dynamically.
+5) Always make the code self-contained (no external network imports).
+6) If you cannot fulfill the request, return a commented JS block explaining why.
+
+Conversation so far (user and assistant messages follow). Use the last user message as the primary task.
+`;
+  // append conversation context to help iterative development
+  const history = conversation.filter(m=>m.role!=='system').map(m=>`${m.role.toUpperCase()}: ${m.content}`).join("\n\n");
+  let task = `USER TASK: ${userInstruction}\n\nDeliverable: a single JS program that defines a function run() — when run() is called it creates the described program in the document body (or canvas). Nothing extra should be printed.`;
+
+  if (mode === 'sceptic') {
+    task = `SCEPTIC MODE: Analyze the following JavaScript (assume it's produced earlier) and list likely bugs, security issues, and suggested fixes. Provide both a short summary comment block and a fixed version of the code. Here is the code to analyze:\n\n` + generatedCodeEl.value;
+  }
+
+  return system + "\n\n" + history + "\n\n" + task;
+}
+
+// Backend wrappers
+async function callHuggingFace(prompt, model='gpt2') {
+  const token = hfTokenEl.value.trim();
+  if (!token) {
+    alert('No Hugging Face token provided. Paste one in settings to use HF backend.');
+    throw new Error('no-token');
+  }
+  // choose a text-generation endpoint; use text-generation pipeline
+  // Using the Inference API text-generation endpoint
+  const url = `https://api-inference.huggingface.co/models/${encodeURIComponent(model)}`;
+  modelNameEl.textContent = model + ' (HF)';
+  const res = await fetch(url, {
+    method:'POST',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({inputs: prompt, options:{wait_for_model:true, use_cache:false, max_new_tokens:512}})
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error('HF error: ' + res.status + ' ' + txt);
+  }
+  const j = await res.json();
+  // HF returns array or object depending on model; pick text access paths
+  if (Array.isArray(j) && j[0]?.generated_text) return j[0].generated_text;
+  if (j.generated_text) return j.generated_text;
+  // some models respond differently
+  if (typeof j === 'string') return j;
+  // fallback
+  return JSON.stringify(j);
+}
+
+// Try transformers.js (xenova) if present
+async function callTransformers(prompt, model='Xenova/gpt2') {
+  // If the user included the transformers script from CDN, global `transformers` may exist.
+  if (window.transformers && window.transformers.pipeline) {
+    // use text-generation pipeline
+    modelNameEl.textContent = model + ' (browser)';
+    // pipeline api differs across libs — try a common interface
+    const p = await window.transformers.pipeline('text-generation', model);
+    const out = await p(prompt, {max_new_tokens:256});
+    if (Array.isArray(out) && out[0]?.generated_text) return out[0].generated_text;
+    if (out?.generated_text) return out.generated_text;
+    return String(out);
+  } else {
+    // If not available, dynamically import @xenova/transformers from CDN
+    modelNameEl.textContent = model + ' (browser - loading)';
+    const moduleUrl = 'https://cdn.jsdelivr.net/npm/@xenova/transformers/dist/transformers.min.js';
+    await loadScript(moduleUrl);
+    // after load, window.transformers should exist
+    if (!window.transformers || !window.transformers.pipeline) throw new Error('transformers.js not ready');
+    const p2 = await window.transformers.pipeline('text-generation', model);
+    const out2 = await p2(prompt, {max_new_tokens:256});
+    if (Array.isArray(out2) && out2[0]?.generated_text) return out2[0].generated_text;
+    if (out2?.generated_text) return out2.generated_text;
+    return String(out2);
+  }
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject)=>{
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = ()=>reject(new Error('script load error: ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+// Main ask function
+async function askModel(mode='generate') {
+  const instruction = userInputEl.value.trim();
+  if (!instruction) { alert('Type an instruction'); return; }
+  const prompt = buildPrompt(instruction, mode);
+  logConv('user', instruction);
+  // pick backend
+  const backend = backendSelect.value;
+  try {
+    let out;
+    if (backend === 'transformers') {
+      // model choice: small gpt2-like model available for browser
+      out = await callTransformers(prompt, 'Xenova/gpt2');
+    } else {
+      // HF backend - pick an accessible text-generation model like gpt2 or small instruct model
+      out = await callHuggingFace(prompt, 'gpt2');
+    }
+    // In case the assistant returned explanation + code, try to extract JS between markers
+    let code = out;
+    // strip common fenced code blocks
+    const fenceMatch = code.match(/```(?:javascript|js)?\n([\s\S]*?)\n```/i);
+    if (fenceMatch) code = fenceMatch[1];
+    // If model replied with explanation, prefer the last code block-looking content (heuristic)
+    const lastBrace = code.lastIndexOf('}');
+    if (lastBrace !== -1 && code.length > 200) {
+      // keep full — but nothing fancy here
+    }
+    generatedCodeEl.value = code.trim();
+    logConv('assistant', code.trim().slice(0,200) + (code.length>200?'...':''));
+  } catch (e) {
+    alert('Model error: ' + e.message);
+  }
+}
+
+askBtn.onclick = ()=> askModel('generate');
+appendBtn.onclick = async ()=> {
+  // append user instruction to conversation but leave previous model output; same as ask
+  await askModel('generate');
+};
+scepticBtn.onclick = ()=> askModel('sceptic');
+
+runBtn.onclick = ()=> {
+  const code = generatedCodeEl.value;
+  runInSandbox(code);
+};
+
+clearConvBtn.onclick = ()=> {
+  if (confirm('Clear conversation?')) {
+    conversation = [];
+    conversationEl.innerHTML = '';
+  }
+};
+
+backendSelect.onchange = ()=> {
+  hfSettings.style.display = backendSelect.value === 'hf' ? 'block' : 'none';
+};
+
+saveBtn.onclick = ()=> {
+  const name = saveName.value.trim() || ('creation-'+Date.now());
+  const data = { code: generatedCodeEl.value, conversation, ts: Date.now() };
+  localStorage.setItem('vibe_' + name, JSON.stringify(data));
+  refreshSaved();
+  alert('Saved as: ' + name);
+};
+
+exportBtn.onclick = ()=> {
+  const payload = {
+    conversation,
+    code: generatedCodeEl.value
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'vibe_creation.json'; a.click();
+  URL.revokeObjectURL(url);
+};
+
+// Quick template chips
+document.querySelectorAll('.chip[data-snippet]').forEach(c=>{
+  c.onclick = ()=> userInputEl.value = c.getAttribute('data-snippet');
+});
+
+// Sandbox runner: injects the code into an iframe srcdoc wrapped with a run() call
+function runInSandbox(code) {
+  // wrap and call run()
+  const wrapped = `
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+  <body>
+    <div id="app"></div>
+    <script>
+      try {
+        // user code begins
+        ${code}
+        // ensure run exists
+        if (typeof run === 'function') {
+          run();
+        } else {
+          // try to execute top-level if no run defined
+          (function(){ ${code} })();
+        }
+      } catch (e) {
+        document.body.innerHTML = '<pre style="color:red">Error executing generated code:\\n' + e.toString() + '</pre>';
+      }
+    <\/script>
+  </body>
+</html>`;
+  const iframe = document.getElementById('sandbox');
+  iframe.srcdoc = wrapped;
+}
+
+// show model detection default
+modelNameEl.textContent = 'local/browser (default)';
+</script>
+</body>
+</html>
