@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Puter.js</title>
+</head>
+<body>
+  <h1>Test Puter.js</h1>
+  <div id="output"></div>
+  <script src="https://js.puter.com/v2/"></script>
+  <script>
+    const out = (msg) => {
+      const div = document.getElementById('output');
+      div.innerHTML += msg + '<br>';
+    };
+
+    (async () => {
+      try {
+        out('✅ Bibliothèque chargée.');
+
+        // Exemple : écrire un fichier “hello.txt” dans le cloud
+        const filename = 'hello-puter.txt';
+        const content = 'Hello from Puter.js!';
+        const file = await puter.fs.write(filename, content);
+        out(`Fichier écrit avec succès: ${filename}`);
+
+        // Lire le fichier
+        const blob = await puter.fs.read(filename);
+        const text = await blob.text();
+        out(`Lecture du fichier ${filename}: "${text}"`);
+
+        // Exemple IA simple : poser une question
+        const response = await puter.ai.chat('Quel est le plus grand mammifère terrestre ?');
+        out(`Réponse IA : ${response}`);
+      } catch (err) {
+        out('❌ Erreur : ' + err);
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>
