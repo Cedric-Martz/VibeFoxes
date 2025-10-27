@@ -1,11 +1,37 @@
 {
-  "name": "IA",
+  "name": "vibefoxes-vibe-coding-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "VibeFoxes - AI-powered code generator with a fox-inspired theme. By Jules François & Martz Cedric.",
   "main": "index.js",
   "scripts": {
     "start": "npx http-server -p 8080 -o",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --check index.js",
+    "test:full": "node --check index.js && node --check server.js",
+    "lint": "eslint index.js server.js",
+    "lint:fix": "eslint index.js server.js --fix",
+    "check": "npm run test && npm run lint",
+    "audit": "npm audit"
   },
-  "private": true
+  "keywords": [
+    "ai",
+    "code-generator",
+    "openai",
+    "gpt",
+    "puter",
+    "fox",
+    "vibefoxes"
+  ],
+  "authors": [
+    "Jules François",
+    "Martz Cedric"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cedric-Martz/ai_assignment.git"
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "http-server": "^14.1.1"
+  }
 }

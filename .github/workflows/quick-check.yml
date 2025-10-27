@@ -1,0 +1,40 @@
+name: Quick Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quick-check:
+    name: Quick Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Syntax Check
+      run: |
+        echo "VibeFoxes Quick Check"
+        node --check index.js && echo "index.js OK"
+        if [ -f "server.js" ]; then
+          node --check server.js && echo "server.js OK"
+        else
+          echo "server.js not found, skipping..."
+        fi
+    - name: File Check
+      run: |
+        echo "Checking required files..."
+        test -f index.js && echo "index.js found"
+        if [ -f "server.js" ]; then
+          echo "server.js found"
+        else
+          echo "server.js not found (optional)"
+        fi
+        test -f package.json && echo "package.json found"
+
+    - name: Success
+      run: echo "Quick check passed!"
