@@ -59,7 +59,7 @@ document.write(`
     <!-- Header -->
     <div id="header" class="bg-editor-toolbar px-5 py-4 border-b border-editor-border">
         <h1 class="text-2xl mb-2.5 text-editor-accent font-semibold">🎨 Vibe Coding App - AI Code Generator</h1>
-        <div id="api-key-section" class="flex gap-2.5 items-center">
+        <div id="api-key-section" class="flex gap-2.5 items-center flex-wrap">
             <input type="text" id="api-key-input" placeholder="Enter your OpenAI API Key..." 
                    class="flex-1 max-w-md px-3 py-2 bg-editor-input border border-gray-600 text-editor-text rounded focus:outline-none focus:ring-2 focus:ring-editor-blue">
             <button id="set-api-key-btn" disabled 
@@ -67,6 +67,27 @@ document.write(`
                 Set API Key
             </button>
             <span id="api-status" class="text-sm"></span>
+            <div class="flex gap-2 items-center ml-4">
+                <label for="model-selector" class="text-editor-text text-sm font-semibold">Model:</label>
+                <select id="model-selector" 
+                        class="px-3 py-2 bg-editor-input border border-gray-600 text-editor-text rounded cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-editor-blue">
+                    <option value="o3-mini" selected>GPT-o3-mini</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini</option>
+                    <option value="puter">Puter.ai (local)</option>
+                </select>
+            </div>
+            <button id="reset-chat-btn" 
+                    class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer text-sm hover:bg-red-700 transition-colors">
+                🔄 Reset Chat
+            </button>
+            <button id="autorun-toggle-btn" 
+                    class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer text-sm hover:bg-green-700 transition-colors">
+                ⚡ Auto-run: ON
+            </button>
         </div>
     </div>
     
@@ -93,17 +114,6 @@ Examples:
                             class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
                         Clear History
                     </button>
-                    <label for="model-selector" class="text-editor-text text-sm">Model:</label>
-                    <select id="model-selector" 
-                            class="px-3 py-2 bg-editor-input border border-gray-600 text-editor-text rounded cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-editor-blue">
-                        <option value="o3-mini" selected>GPT-o3-mini</option>
-                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                        <option value="gpt-4">GPT-4</option>
-                        <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
-                        <option value="gpt-4o">GPT-4o</option>
-                        <option value="gpt-4o-mini">GPT-4o Mini</option>
-                        <option value="puter">Puter.ai (local)</option>
-                    </select>
                 </div>
                 <div class="mt-2.5 flex flex-wrap gap-2">
                     <button class="example-btn px-3 py-1.5 bg-editor-input border border-gray-600 text-editor-text rounded cursor-pointer text-xs hover:bg-gray-700 transition-colors" 
@@ -121,7 +131,7 @@ Examples:
         <!-- Right Panel -->
         <div id="right-panel" class="w-3/5 bg-editor-bg flex flex-col">
             <!-- Code Editor Section -->
-            <div id="code-editor-section" class="flex-1 flex flex-col overflow-hidden">
+            <div id="code-editor-section" class="flex-1 flex flex-col overflow-hidden" style="display: none;">
                 <div id="code-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Generated Code:</strong>
                     <button id="run-code-btn" disabled 
@@ -147,9 +157,13 @@ Examples:
             </div>
             
             <!-- Output Section -->
-            <div id="output-section" class="h-1/2 border-t border-editor-border flex flex-col">
+            <div id="output-section" class="h-full border-t border-editor-border flex flex-col transition-all duration-300">
                 <div id="output-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Output:</strong>
+                    <button id="toggle-code-btn" 
+                            class="px-4 py-2 bg-purple-600 text-white rounded cursor-pointer text-sm hover:bg-purple-700 transition-colors">
+                        👁️ Show Code
+                    </button>
                     <button id="clear-output-btn" 
                             class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
                         Clear Output
@@ -189,6 +203,7 @@ let canvas = null;
 let ctx = null;
 let lastImageData = null;
 let puterReady = false;
+let autoRunEnabled = true; // Auto-run activé par défaut
 
 // Wait for Puter to be ready (synchronous load, should be immediate)
 // Puter is now loaded synchronously from local file
@@ -235,11 +250,16 @@ const promptInput = document.getElementById('prompt-input');
 const sendBtn = document.getElementById('send-btn');
 const clearBtn = document.getElementById('clear-btn');
 const modelSelector = document.getElementById('model-selector');
+const resetChatBtn = document.getElementById('reset-chat-btn');
+const autorunToggleBtn = document.getElementById('autorun-toggle-btn');
 const codeContent = document.getElementById('code-content');
 const runCodeBtn = document.getElementById('run-code-btn');
 const copyCodeBtn = document.getElementById('copy-code-btn');
 const undoBtn = document.getElementById('undo-btn');
 const redoBtn = document.getElementById('redo-btn');
+const toggleCodeBtn = document.getElementById('toggle-code-btn');
+const codeEditorSection = document.getElementById('code-editor-section');
+const outputSection = document.getElementById('output-section');
 const outputDisplay = document.getElementById('output-display');
 const clearOutputBtn = document.getElementById('clear-output-btn');
 const drawingTools = document.getElementById('drawing-tools');
@@ -431,6 +451,11 @@ async function sendPromptToAI() {
         const extractedCode = extractCode(aiResponse);
         if (extractedCode) {
             updateCode(extractedCode);
+
+            // Auto-run code if autorun is enabled
+            if (autoRunEnabled) {
+                runCode(extractedCode);
+            }
         } else {
             // If response is an image URL or base64, attempt to show it
             if (aiResponse.startsWith('http') || aiResponse.startsWith('data:image')) {
@@ -642,9 +667,70 @@ clearBtn.addEventListener('click', () => {
     }
 });
 
+// Reset Chat - Clear everything
+resetChatBtn.addEventListener('click', () => {
+    if (confirm('Reset the entire chat? This will clear conversation history, code, and output.')) {
+        conversationHistory = [];
+        conversationDiv.innerHTML = '';
+        currentCode = '';
+        codeHistory = [];
+        historyIndex = -1;
+        codeContent.textContent = '// Your generated code will appear here...';
+        outputDisplay.innerHTML = '';
+        drawingTools.style.display = 'none';
+        runCodeBtn.disabled = true;
+        copyCodeBtn.disabled = true;
+        updateUndoRedoButtons();
+    }
+});
+
+// Autorun Toggle
+autorunToggleBtn.addEventListener('click', () => {
+    autoRunEnabled = !autoRunEnabled;
+    if (autoRunEnabled) {
+        autorunToggleBtn.textContent = '⚡ Auto-run: ON';
+        autorunToggleBtn.classList.remove('bg-gray-600');
+        autorunToggleBtn.classList.add('bg-green-600');
+        autorunToggleBtn.classList.remove('hover:bg-gray-700');
+        autorunToggleBtn.classList.add('hover:bg-green-700');
+    } else {
+        autorunToggleBtn.textContent = '🖐️ Auto-run: OFF';
+        autorunToggleBtn.classList.remove('bg-green-600');
+        autorunToggleBtn.classList.add('bg-gray-600');
+        autorunToggleBtn.classList.remove('hover:bg-green-700');
+        autorunToggleBtn.classList.add('hover:bg-gray-700');
+    }
+});
+
 clearOutputBtn.addEventListener('click', () => {
     outputDisplay.innerHTML = '';
     drawingTools.style.display = 'none';
+});
+
+// Toggle Code Section Visibility
+let codeVisible = false; // Par défaut, le code est caché
+toggleCodeBtn.addEventListener('click', () => {
+    codeVisible = !codeVisible;
+
+    if (codeVisible) {
+        // Show code section
+        codeEditorSection.style.display = 'flex';
+        outputSection.style.height = '50%';
+        toggleCodeBtn.textContent = '👁️ Hide Code';
+
+        // Update undo/redo buttons when showing code
+        updateUndoRedoButtons();
+    } else {
+        // Hide code section
+        codeEditorSection.style.display = 'none';
+        outputSection.style.height = '100%';
+        toggleCodeBtn.textContent = '👁️ Show Code';
+
+        // Auto-run code when hiding code section (if code exists and autorun enabled)
+        if (autoRunEnabled && currentCode && currentCode !== '// Your generated code will appear here...') {
+            runCode(currentCode);
+        }
+    }
 });
 
 // Canvas Drawing for Image Editing
