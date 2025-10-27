@@ -38,7 +38,7 @@ jobs:
       run: |
         npm install -g eslint
         eslint --init --yes || true
-        eslint index.js server.js --ignore-pattern 'node_modules/' || echo "ESLint completed with warnings"
+        eslint index.js --ignore-pattern 'node_modules/' || echo "ESLint completed with warnings"
       continue-on-error: true
 
     - name: Validate HTML structure
@@ -48,7 +48,7 @@ jobs:
     - name: Check file sizes
       run: |
         echo "Checking file sizes..."
-        ls -lh index.js server.js
+        ls -lh index.js
         FILE_SIZE=$(stat -f%z index.js 2>/dev/null || stat -c%s index.js)
         if [ $FILE_SIZE -gt 500000 ]; then
           echo "Warning: index.js is larger than 500KB"
@@ -126,7 +126,7 @@ jobs:
         echo "Theme: Fox-inspired AI code generator"
         echo ""
         echo "Project Statistics:"
-        wc -l index.js server.js
+        wc -l index.js
         echo ""
         echo "API Integrations:"
         grep -o "openai\|puter" index.js | sort | uniq -c || true
@@ -136,9 +136,6 @@ jobs:
         echo "Checking PUTER_AVAILABLE configuration..."
         if grep -q "const PUTER_AVAILABLE = true" index.js; then
           echo "PUTER_AVAILABLE = true (local testing mode)"
-        fi
-        if grep -q "const PUTER_AVAILABLE = false" server.js; then
-          echo "PUTER_AVAILABLE = false (Ancient Brain mode)"
         fi
 
   deployment-ready:
@@ -161,10 +158,6 @@ jobs:
 
         if [ -f "index.js" ]; then
           echo "index.js exists"
-        fi
-
-        if [ -f "server.js" ]; then
-          echo "server.js exists (Ancient Brain version)"
         fi
 
         if [ -f "package.json" ]; then

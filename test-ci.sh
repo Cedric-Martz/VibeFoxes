@@ -140,7 +140,7 @@ echo ""
 echo "Test Summary:"
 
 if [ $ERRORS -eq 0 ]; then
-    echo -e "${GREEN}🎉 All checks passed!${NC}"
+    echo -e "${GREEN}All checks passed!${NC}"
     exit 0
 else
     echo -e "${RED}$ERRORS error(s) found. Please fix them before deploying.${NC}"
