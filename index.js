@@ -1,4 +1,7 @@
-// Assignment1: Vibe Coding App - Professional Version
+// Assignment: Vibe Coding App
+// JULES FRANCOIS
+// MARTZ CEDRIC
+// 2025
 
 (function() {
     const tailwindScript = document.createElement('script');
@@ -28,8 +31,7 @@
             };
         }
     };
-    
-    // Add CSS for notifications animation
+
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -275,19 +277,13 @@ const penSize = document.getElementById('pen-size');
 const saveDrawingBtn = document.getElementById('save-drawing-btn');
 const sendToAiBtn = document.getElementById('send-to-ai-btn');
 
-// Function to show notifications on page instead of alerts
 function showNotification(message, type = 'info') {
-    // Remove any existing notification
     const existingNotif = document.querySelector('.page-notification');
-    if (existingNotif) {
+    if (existingNotif)
         existingNotif.remove();
-    }
-
     const notif = document.createElement('div');
     notif.className = 'page-notification fixed top-20 right-5 z-50 p-4 rounded-lg shadow-lg max-w-md animate-slide-in';
-    
     let bgColor, borderColor, iconPath;
-    
     if (type === 'error') {
         bgColor = 'bg-red-900';
         borderColor = 'border-red-600';
@@ -300,14 +296,12 @@ function showNotification(message, type = 'info') {
         bgColor = 'bg-green-900';
         borderColor = 'border-green-600';
         iconPath = 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z';
-    } else { // info
+    } else {
         bgColor = 'bg-blue-900';
         borderColor = 'border-blue-600';
         iconPath = 'M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z';
     }
-    
     notif.className += ` ${bgColor} border ${borderColor} text-white`;
-    
     notif.innerHTML = `
         <div class="flex items-start gap-3">
             <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -319,10 +313,7 @@ function showNotification(message, type = 'info') {
             <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-300 font-bold text-xl leading-none">×</button>
         </div>
     `;
-    
     document.body.appendChild(notif);
-    
-    // Auto-remove after 5 seconds
     setTimeout(() => {
         if (notif.parentElement) {
             notif.style.opacity = '0';
@@ -332,7 +323,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Puter is used if you don't have API key. See doc here: https://developer.puter.com/
+// Puter is used for our tests, because we don't have an API key. See doc here: https://developer.puter.com/
 const initPuter = () => {
     if (typeof puter !== 'undefined') {
         puterReady = true;
@@ -354,7 +345,8 @@ if (!initPuter()) {
                 const btnEl = document.getElementById('send-btn');
 
                 if (modelSelect && modelSelect.value === 'puter') {
-                    if (btnEl) btnEl.disabled = false;
+                    if (btnEl)
+                        btnEl.disabled = false;
                     if (statusEl) {
                         statusEl.textContent = 'Puter.ai Ready';
                         statusEl.style.color = '#4ec9b0';
@@ -424,10 +416,11 @@ async function sendPromptToAI() {
     const prompt = promptInput.value.trim();
     const usePuter = selectedModel === 'puter';
 
-    if (!prompt) return;
+    if (!prompt)
+        return;
 
     if (!usePuter && !apiKey) {
-        showNotification('Please set your OpenAI API key or choose Puter as the model.', 'warning');
+        showNotification('Please set your OpenAI API key.', 'warning');
         return;
     }
 
@@ -446,28 +439,23 @@ async function sendPromptToAI() {
     try {
         let aiResponse = '';
 
-        if (usePuter) {
+        if (usePuter)
             aiResponse = await getPuterResponse(prompt);
-        } else {
+        else
             aiResponse = await getOpenAIResponse(messages);
-        }
-
         addMessageToConversation('assistant', aiResponse);
-
         const extractedCode = extractCode(aiResponse);
         if (extractedCode) {
             updateCode(extractedCode);
 
             if (autoRunEnabled) {
-                if (isHtmlCode(extractedCode)) {
+                if (isHtmlCode(extractedCode))
                     runCode(extractedCode);
-                } else {
+                else
                     showAutoRunWarning();
-                }
             }
-        } else {
+        } else
             handleNonCodeResponse(aiResponse);
-        }
 
     } catch (error) {
         console.error('Error:', error);
@@ -480,9 +468,8 @@ async function sendPromptToAI() {
 }
 
 async function getPuterResponse(prompt) {
-    if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat) {
+    if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
         throw new Error('Puter library not loaded or puter.ai.chat not available.');
-    }
 
     console.log('Sending request to Puter.ai...');
 
@@ -493,9 +480,7 @@ async function getPuterResponse(prompt) {
 - The code should be immediately executable
 
 `;
-
     let fullPrompt = systemInstructions;
-
     const recentHistory = conversationHistory.slice(-10);
     if (recentHistory.length > 0) {
         fullPrompt += '\n\nConversation history:\n';
@@ -504,40 +489,29 @@ async function getPuterResponse(prompt) {
             fullPrompt += `${role}: ${msg.content}\n\n`;
         });
     }
-
-    if (currentCode) {
+    if (currentCode)
         fullPrompt += `\nCurrent code in editor:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n`;
-    }
-
     fullPrompt += `User request: ${prompt}`;
-
     const puterResult = await puter.ai.chat(fullPrompt);
     console.log('Puter response:', puterResult);
-
     let aiResponse = '';
-
-    if (typeof puterResult === 'string') {
+    if (typeof puterResult === 'string')
         aiResponse = puterResult;
-    } else if (puterResult && puterResult.message) {
-        if (typeof puterResult.message === 'string') {
+    else if (puterResult && puterResult.message) {
+        if (typeof puterResult.message === 'string')
             aiResponse = puterResult.message;
-        } else if (puterResult.message.content) {
+        else if (puterResult.message.content)
             aiResponse = puterResult.message.content;
-        }
-    } else if (puterResult && puterResult.response) {
+    } else if (puterResult && puterResult.response)
         aiResponse = puterResult.response;
-    } else if (puterResult && puterResult.text) {
+    else if (puterResult && puterResult.text)
         aiResponse = puterResult.text;
-    } else if (puterResult && puterResult.content) {
+    else if (puterResult && puterResult.content)
         aiResponse = puterResult.content;
-    } else {
+    else
         aiResponse = JSON.stringify(puterResult, null, 2);
-    }
-
-    if (!aiResponse) {
+    if (!aiResponse)
         throw new Error('Empty response from Puter.ai');
-    }
-
     return aiResponse;
 }
 
@@ -555,13 +529,9 @@ async function getOpenAIResponse(messages) {
             max_tokens: 2000
         })
     });
-
     const data = await response.json();
-
-    if (data.error) {
+    if (data.error)
         throw new Error(data.error.message);
-    }
-
     return data.choices[0].message.content;
 }
 
@@ -581,7 +551,7 @@ function handleNonCodeResponse(aiResponse) {
 function buildConversationContext() {
     const systemMessage = {
         role: 'system',
-        content: `You are a helpful coding assistant for a vibe coding app. Generate executable JavaScript code based on user descriptions.
+        content: `You are a coding assistant for a vibe coding app. Generate executable JavaScript code based on user descriptions.
 
 Rules:
 - If the user asks for an animation or visual: Generate complete HTML/CSS/JS code that can run in a browser
@@ -636,10 +606,8 @@ function extractCode(text) {
     const codeBlockRegex = /```(?:html|javascript|js|css)?\n?([\s\S]*?)```/g;
     const matches = [...text.matchAll(codeBlockRegex)];
 
-    if (matches.length > 0) {
+    if (matches.length > 0)
         return matches[0][1].trim();
-    }
-
     return null;
 }
 
@@ -667,7 +635,6 @@ function isHtmlCode(code) {
                       code.includes('let ') ||
                       code.includes('var ') ||
                       code.includes('console.log'));
-
     return isHtml || isPureJs;
 }
 
@@ -699,10 +666,8 @@ function updateCode(newCode) {
 
     if (historyIndex < codeHistory.length - 1)
         codeHistory = codeHistory.slice(0, historyIndex + 1);
-
     codeHistory.push(newCode);
     historyIndex = codeHistory.length - 1;
-
     updateUndoRedoButtons();
     runCodeBtn.disabled = false;
     copyCodeBtn.disabled = false;
@@ -714,18 +679,13 @@ function addMessageToConversation(role, content) {
     const text = document.createElement('div');
 
     conversationHistory.push({ role, content });
-
-    if (role === 'user') {
+    if (role === 'user')
         messageDiv.className = 'mb-4 p-3 rounded-md bg-editor-message-user ml-5';
-    } else {
+    else
         messageDiv.className = 'mb-4 p-3 rounded-md bg-editor-toolbar mr-5';
-    }
-
     label.className = 'font-bold mb-1 text-xs opacity-80';
     label.textContent = role === 'user' ? 'You:' : 'AI Assistant:';
-
     text.textContent = content;
-
     messageDiv.appendChild(label);
     messageDiv.appendChild(text);
     conversationDiv.appendChild(messageDiv);
@@ -905,7 +865,8 @@ function startDrawing(e) {
 }
 
 function draw(e) {
-    if (!isDrawing) return;
+    if (!isDrawing)
+        return;
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
