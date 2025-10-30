@@ -48,10 +48,15 @@ const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain web
 
 // We use Puter.js to test locally the AI, because we don't have API Keys
 (function() {
-    const puterScript = document.createElement('script');
-    puterScript.src = 'https://js.puter.com/v2/';
-    puterScript.async = true;
-    document.head.appendChild(puterScript);
+    if (typeof PUTER_AVAILABLE !== 'undefined' && PUTER_AVAILABLE) {
+        const puterScript = document.createElement('script');
+        puterScript.src = 'https://js.puter.com/v2/';
+        puterScript.async = true;
+        document.head.appendChild(puterScript);
+        console.log('Puter script appended (PUTER_AVAILABLE=true)');
+    } else {
+        console.log('Puter disabled (PUTER_AVAILABLE=false) - not loading Puter script');
+    }
 })();
 
 document.write(`
@@ -418,6 +423,11 @@ let isDragging = false;
 let currentDivider = null;
 
 const initPuter = () => {
+    if (typeof PUTER_AVAILABLE !== 'undefined' && !PUTER_AVAILABLE) {
+        puterReady = false;
+        return false;
+    }
+
     if (typeof puter !== 'undefined') {
         puterReady = true;
         console.log('Puter.js loaded and ready (FOR TESTS ONLY, PUTER IS NOT SUPPORTED ON ANCIENTBRAIN WEBSITE).');
@@ -427,20 +437,25 @@ const initPuter = () => {
     return false;
 };
 
-if (!initPuter()) {
-    let attempts = 0;
-    const checkPuter = setInterval(() => {
-        attempts++;
-        if (initPuter() || attempts > 50) {
-            clearInterval(checkPuter);
-            if (puterReady) {
-                const modelSelect = document.getElementById('model-selector');
-                const statusEl = document.getElementById('api-status');
-                if (modelSelect && modelSelect.value === 'puter')
-                    updateSendButtonState();
+
+if (typeof PUTER_AVAILABLE !== 'undefined' && PUTER_AVAILABLE) {
+    if (!initPuter()) {
+        let attempts = 0;
+        const checkPuter = setInterval(() => {
+            attempts++;
+            if (initPuter() || attempts > 50) {
+                clearInterval(checkPuter);
+                if (puterReady) {
+                    const modelSelect = document.getElementById('model-selector');
+                    if (modelSelect && modelSelect.value === 'puter')
+                        updateSendButtonState();
+                }
             }
-        }
-    }, 50);
+        }, 50);
+    }
+} else {
+    // Ensure UI state reflects Puter not available
+    console.log('Puter polling skipped because PUTER_AVAILABLE=false');
 }
 
 const apiKeyInput = document.getElementById('api-key-input');
@@ -502,10 +517,38 @@ function initializeApp() {
     const savedModel = localStorage.getItem('vibefoxes-model');
     const savedApiKey = localStorage.getItem('vibefoxes-apikey');
 
+    if (typeof PUTER_AVAILABLE !== 'undefined' && !PUTER_AVAILABLE) {
+        try {
+            [ ...document.querySelectorAll('#model-selector option') ]
+                .filter(o => o.value === 'puter')
+                .forEach(o => o.remove());
+        } catch (iWillNotCatchYou) {
+            // ignore - yay
+        }
+        try {
+            [ ...document.querySelectorAll('#welcome-model-selector option') ]
+                .filter(o => o.value === 'puter')
+                .forEach(o => o.remove());
+        } catch (iWillNotCatchYou) {
+            // ignore - nothing :/
+        }
+        if (savedModel === 'puter') {
+            selectedModel = 'o3-mini';
+            localStorage.setItem('vibefoxes-model', selectedModel);
+        }
+    }
+
     if (savedModel) {
         selectedModel = savedModel;
         modelSelector.value = savedModel;
         welcomeModelSelector.value = savedModel;
+    }
+
+    if (typeof PUTER_AVAILABLE !== 'undefined' && !PUTER_AVAILABLE && selectedModel === 'puter') {
+        selectedModel = 'o3-mini';
+        modelSelector.value = selectedModel;
+        welcomeModelSelector.value = selectedModel;
+        localStorage.setItem('vibefoxes-model', selectedModel);
     }
     if (savedApiKey) {
         apiKey = savedApiKey;
@@ -516,7 +559,7 @@ function initializeApp() {
 }
 
 function updateSendButtonState() {
-    const usePuter = selectedModel === 'puter';
+    const usePuter = selectedModel === 'puter' && (typeof PUTER_AVAILABLE === 'undefined' || PUTER_AVAILABLE);
 
     if (usePuter) {
         sendBtn.disabled = !puterReady;
@@ -711,8 +754,8 @@ async function sendPromptToAI() {
         return;
     }
 
-    // If Puter selected, we don't require an OpenAI API key -- again, this is only for local testing -- Jules
-    const usePuter = selectedModel === 'puter';
+    // If Puter selected, we don't require an OpenAI API key -- again, this is only for local testing
+    const usePuter = selectedModel === 'puter' && (typeof PUTER_AVAILABLE === 'undefined' || PUTER_AVAILABLE);
     if (!usePuter && !apiKey) {
         console.log('Please set your OpenAI API key');
         addMessageToConversation('assistant', 'Please set your OpenAI API key');
