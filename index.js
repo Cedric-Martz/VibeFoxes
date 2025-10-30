@@ -76,6 +76,14 @@ document.write(`
         from { opacity: 1; }
         to { opacity: 0; }
     }
+    @keyframes barrel-roll {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .do-barrel-roll {
+        animation: barrel-roll 1s ease-in-out;
+    }
 
     .animate-slide-in {
         animation: slide-in 0.3s ease-out;
@@ -689,6 +697,19 @@ async function sendPromptToAI() {
     const prompt = promptInput.value.trim();
     if (!prompt)
         return;
+
+    // Easter egg ^^
+    if (prompt.toLowerCase() === 'do a barrel roll') {
+        const appContainer = document.getElementById('app-container');
+        appContainer.classList.add('do-barrel-roll');
+        setTimeout(() => {
+            appContainer.classList.remove('do-barrel-roll');
+        }, 1000);
+        addMessageToConversation('user', prompt);
+        addMessageToConversation('assistant', 'wow, I feel dizzy now >:(');
+        promptInput.value = '';
+        return;
+    }
 
     // If Puter selected, we don't require an OpenAI API key -- again, this is only for local testing -- Jules
     const usePuter = selectedModel === 'puter';
