@@ -3,7 +3,7 @@
 // MARTZ CEDRIC
 // 2025
 
-const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain, true for local testing with an index.html
+const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain website, true for local testing with an index.html
 
 (function() {
     const tailwindScript = document.createElement('script');
@@ -12,100 +12,30 @@ const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain, tr
     document.head.appendChild(tailwindScript);
 
     tailwindScript.onload = () => {
-        if (window.tailwind && window.tailwind.config) {
+        if (window.tailwind && window.tailwind.config)
             window.tailwind.config = {
                 theme: {
                     extend: {
                         colors: {
                             'editor-bg': '#1a1410',
                             'editor-panel': '#2a1f1a',
-                            'editor-toolbar': '#3d2817',
-                            'editor-input': '#4a3422',
-                            'editor-border': '#6b4423',
+                            'editor-toolbar': '#3a2820',
+                            'editor-input': '#4a3528',
+                            'editor-border': '#5a4030',
                             'editor-text': '#f5e6d3',
                             'editor-accent': '#ff6b35',
-                            'editor-blue': '#d95d39',
-                            'editor-blue-hover': '#ff8c42',
-                            'editor-message-user': '#8b4513',
                             'fox-orange': '#ff6b35',
                             'fox-orange-dark': '#d95d39',
+                            'fox-orange-hover': '#ff8555',
                             'fox-cream': '#f5e6d3',
                             'fox-brown': '#6b4423',
-                            'fox-tail': '#ff8c42',
+                            'fox-dark': '#1a1410',
+                            'editor-message-user': '#4a3528',
                         }
                     }
                 }
             };
-        }
     };
-
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes foxTailWag {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-
-        @keyframes foxGlow {
-            0%, 100% { box-shadow: 0 0 5px rgba(255, 107, 53, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.6); }
-        }
-
-        .page-notification {
-            animation: slideInRight 0.3s ease-out;
-            border-left: 4px solid #ff6b35;
-        }
-
-        button:hover {
-            cursor: pointer;
-            animation: foxGlow 1.5s ease-in-out infinite;
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #2a1f1a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #ff6b35;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff8c42;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 2px #ff6b35 !important;
-            border-color: #ff6b35 !important;
-        }
-
-        .mb-4 {
-            position: relative;
-        }
-
-        .mb-4:hover {
-            transform: translateX(2px);
-            transition: transform 0.2s ease;
-        }
-    `;
-    document.head.appendChild(style);
 })();
 
 (function() {
@@ -116,241 +46,304 @@ const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain, tr
     document.head.appendChild(jqueryScript);
 })();
 
-if (PUTER_AVAILABLE) {
-    (function() {
-        const puterScript = document.createElement('script');
-        puterScript.src = 'https://js.puter.com/v2/';
-        puterScript.async = true;
-        document.head.appendChild(puterScript);
-    })();
-} else
-    console.log('puter.ai is disabled');
+// We use Puter.js to test locally the AI, because we don't have API Keys
+(function() {
+    const puterScript = document.createElement('script');
+    puterScript.src = 'https://js.puter.com/v2/';
+    puterScript.async = true;
+    document.head.appendChild(puterScript);
+})();
 
 document.write(`
-<div id="welcome-screen" class="flex items-center justify-center h-screen bg-editor-bg">
-    <div class="max-w-2xl w-full mx-4">
-        <div class="bg-editor-panel border-2 border-fox-orange p-8 rounded-2xl shadow-2xl" style="box-shadow: 0 0 40px rgba(255, 107, 53, 0.3);">
-            <div class="text-center mb-8">
-                <div class="mb-4">
-                    <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="VibeFoxes" class="w-16 h-16 mx-auto" style="filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.7));">
-                </div>
-                <h1 class="text-5xl font-bold text-fox-orange mb-2" style="text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);">
-                    VibeFoxes
-                </h1>
-                <p class="text-fox-cream text-lg opacity-80 italic">Welcome to the Vibe Coding App where the devs were inspired by Halloween, but didn't want to use pumpkins and find out that foxes are orange too!</p>
+<style>
+    @keyframes bounce-fox {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    @keyframes slide-in {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes glow {
+        0%, 100% { box-shadow: 0 0 5px #ff6b35; }
+        50% { box-shadow: 0 0 20px #ff6b35, 0 0 30px #ff6b35; }
+    }
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+    }
+    .btn-glow:hover {
+        animation: glow 1.5s ease-in-out infinite;
+    }
+    .fade-out-screen {
+        animation: fade-out 0.5s ease-out forwards;
+    }
+
+    ::-webkit-scrollbar {
+        width: 12px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #1a1410;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #ff6b35;
+        border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #ff8555;
+    }
+
+    #welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1a1410 0%, #2a1f1a 50%, #3a2820 100%);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fade-in 0.5s ease-in;
+    }
+
+    #loading-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(26, 20, 16, 0.9);
+        z-index: 9998;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #fox-game-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        background: #f5e6d3;
+        border: 4px solid #ff6b35;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 50px rgba(255, 107, 53, 0.5);
+        display: none;
+    }
+</style>
+
+<div id="welcome-screen">
+    <div class="bg-editor-panel p-10 rounded-2xl border-2 border-fox-orange shadow-2xl max-w-2xl w-full mx-4 animate-slide-in">
+        <div class="text-center mb-8">
+            <div class="mb-4 flex justify-center">
+                <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="Fox" style="width: 96px; height: 96px; image-rendering: pixelated;">
             </div>
-            <div class="mb-6">
-                <label class="block text-fox-cream text-sm font-semibold mb-2">
-                    Choose your AI Model:
-                </label>
-                <select
-                    id="welcome-model-selector"
-                    class="w-full px-4 py-3 bg-editor-input border-2 border-fox-brown text-editor-text rounded-lg cursor-pointer text-base focus:outline-none focus:border-fox-orange transition-all">
+            <h1 class="text-5xl font-bold text-fox-orange mb-2">VibeFoxes</h1>
+            <p class="text-fox-cream text-lg">We thought about giving the site a Halloween theme and preferred foxes to pumpkins for the orange colour</p>
+        </div>
+
+        <div class="space-y-6 mb-8">
+            <div>
+                <label class="block text-fox-cream font-semibold mb-2 text-sm">Choose AI Model:</label>
+                <select id="welcome-model-selector"
+                        class="w-full px-4 py-3 bg-editor-input border-2 border-editor-border text-editor-text rounded-lg focus:outline-none focus:border-fox-orange transition-colors">
                     <option value="o3-mini" selected>GPT-o3-mini</option>
-                    <option value="gpt-4o-mini">GPT-4o Mini</option>
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gpt-4">GPT-4</option>
                     <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
                     <option value="gpt-4o">GPT-4o</option>
-                    ${PUTER_AVAILABLE ? '<option value="puter">Puter.ai</option>' : ''}
+                    <option value="gpt-4o-mini">GPT-4o Mini</option>
+                    <option value="puter">Puter.ai</option>
                 </select>
             </div>
-            <div class="mb-6">
-                <label class="block text-fox-cream text-sm font-semibold mb-2">
-                    OpenAI API Key <span class="text-xs opacity-60">(optional for Puter)</span>:
-                </label>
-                <input
-                    type="password"
-                    id="welcome-api-key-input"
-                    placeholder="Copy/Paste was probably invented by Larry Tesler... Anyways, paste your key here :-)"
-                    class="w-full px-4 py-3 bg-editor-input border-2 border-fox-brown text-editor-text rounded-lg focus:outline-none focus:border-fox-orange transition-all">
+
+            <div id="welcome-api-section">
+                <label class="block text-fox-cream font-semibold mb-2 text-sm">OpenAI API Key:</label>
+                <input type="password" id="welcome-api-input"
+                       placeholder="sk-..."
+                       class="w-full px-4 py-3 bg-editor-input border-2 border-editor-border text-editor-text rounded-lg focus:outline-none focus:border-fox-orange transition-colors">
+                <a href="https://platform.openai.com/api-keys" target="_blank"
+                   class="text-fox-orange text-sm hover:text-fox-orange-hover mt-1 inline-block">
+                    Need an API key? Click here :-)
+                </a>
             </div>
-            <div class="flex gap-3 mb-4">
-                <button
-                    id="welcome-start-btn"
-                    class="flex-1 px-6 py-3 bg-fox-orange text-white font-semibold rounded-lg hover:bg-fox-tail transition-all transform hover:scale-105 shadow-lg"
-                    style="box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);">
-                    Start Coding
-                </button>
-                <button
-                    id="welcome-later-btn"
-                    class="flex-1 px-6 py-3 bg-editor-toolbar text-fox-cream border-2 border-fox-brown font-semibold rounded-lg hover:bg-editor-input transition-all">
-                    I'll do it later
-                </button>
-            </div>
-            <div class="text-center text-xs text-fox-cream opacity-50">
-                Don't have an API key? <a href="https://platform.openai.com/api-keys" target="_blank" class="text-fox-orange hover:text-fox-tail underline">Get one here</a>
-            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <button id="welcome-start-btn"
+                    class="flex-1 px-6 py-4 bg-fox-orange text-white font-bold rounded-lg hover:bg-fox-orange-hover transition-all btn-glow text-lg">
+                Let's go
+            </button>
+            <button id="welcome-later-btn"
+                    class="flex-1 px-6 py-4 bg-editor-toolbar text-fox-cream font-semibold rounded-lg hover:bg-editor-input transition-colors border-2 border-editor-border text-lg">
+                I'll do it later
+            </button>
         </div>
     </div>
 </div>
-<div id="app-container" class="flex flex-col h-screen bg-editor-bg text-editor-text font-sans overflow-hidden" style="display: none;">
-    <div id="header" class="bg-editor-toolbar px-5 py-4 border-b border-editor-border relative">
-        <div class="flex items-center gap-3 mb-2.5">
-            <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="VibeFoxes" class="w-10 h-10" style="filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.5));">
-            <div>
-                <h1 class="text-3xl font-bold text-fox-orange" style="text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);">
-                    VibeFoxes
-                </h1>
-                <p class="text-xs text-fox-cream opacity-75 italic">Vibe Coding App</p>
-            </div>
+
+<div id="loading-modal">
+    <div class="bg-editor-panel p-12 rounded-2xl border-2 border-fox-orange text-center">
+        <div class="mb-4 flex justify-center">
+            <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="Fox" style="width: 128px; height: 128px; image-rendering: pixelated;">
         </div>
+        <h2 class="text-3xl font-bold text-fox-orange mb-2">Generating Code...</h2>
+        <button id="play-game-btn"
+                class="px-6 py-3 bg-fox-orange text-white font-bold rounded-lg hover:bg-fox-orange-hover transition-all btn-glow">
+            Click to play while you wait!
+        </button>
+    </div>
+</div>
+
+<div id="fox-game-container">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-2xl font-bold text-fox-brown flex items-center gap-2">
+            <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="Fox" style="width: 32px; height: 32px; image-rendering: pixelated;">
+            Fox Run!
+        </h3>
+        <button id="close-game-btn"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            Close
+        </button>
+    </div>
+    <canvas id="game-canvas" width="800" height="200" class="border-2 border-fox-brown rounded-lg mb-4"></canvas>
+    <div class="text-center">
+        <p class="text-fox-brown font-semibold mb-2">Score: <span id="game-score">0</span></p>
+        <p class="text-sm text-fox-brown">Press SPACE to jump!</p>
+    </div>
+</div>
+
+<div id="app-container" class="flex flex-col h-screen bg-editor-bg text-editor-text font-sans overflow-hidden">
+    <div id="header" class="bg-editor-toolbar px-5 py-4 border-b border-editor-border">
+        <h1 class="text-2xl mb-2.5 text-fox-orange font-semibold flex items-center gap-2">
+            <img src="https://ancientbrain.com/uploads/cedric588/favicon.ico" alt="Fox" style="width: 32px; height: 32px; image-rendering: pixelated;">
+            VibeFoxes - A Vibe Coding Experience
+        </h1>
         <div id="api-key-section" class="flex gap-2.5 items-center flex-wrap">
-            <input
-                type="text"
-                id="api-key-input"
-                placeholder="Enter your OpenAI API Key..."
-                class="flex-1 max-w-md px-3 py-2 bg-editor-input border border-gray-600 text-editor-text rounded focus:outline-none focus:ring-2 focus:ring-editor-blue">
-            <button
-                id="set-api-key-btn"
-                disabled
-                class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+            <input type="password" id="api-key-input" placeholder="Enter your OpenAI API Key..."
+                   class="flex-1 max-w-md px-3 py-2 bg-editor-input border border-editor-border text-editor-text rounded focus:outline-none focus:ring-2 focus:ring-fox-orange">
+            <button id="set-api-key-btn" disabled
+                    class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                 Set API Key
             </button>
             <span id="api-status" class="text-sm"></span>
             <div class="flex gap-2 items-center ml-4">
                 <label for="model-selector" class="text-editor-text text-sm font-semibold">Model:</label>
-                <select
-                    id="model-selector"
-                    class="px-3 py-2 bg-editor-input border border-gray-600 text-editor-text rounded cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-editor-blue">
+                <select id="model-selector"
+                        class="px-3 py-2 bg-editor-input border border-editor-border text-editor-text rounded cursor-pointer text-sm focus:outline-none focus:ring-2 focus:ring-fox-orange">
                     <option value="o3-mini" selected>GPT-o3-mini</option>
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gpt-4">GPT-4</option>
                     <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
                     <option value="gpt-4o">GPT-4o</option>
                     <option value="gpt-4o-mini">GPT-4o Mini</option>
-                    ${PUTER_AVAILABLE ? '<option value="puter">Puter</option>' : ''}
+                    <option value="puter">Puter.ai (testing)</option>
                 </select>
             </div>
-            <button
-                id="reset-chat-btn"
-                class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer text-sm hover:bg-red-700 transition-colors">
+            <button id="reset-chat-btn"
+                    class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer text-sm hover:bg-red-700 transition-colors">
                 Reset Chat
             </button>
-            <button
-                id="autorun-toggle-btn"
-                class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer text-sm hover:bg-green-700 transition-colors">
+            <button id="autorun-toggle-btn"
+                    class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer text-sm hover:bg-green-700 transition-colors">
                 Auto-run: ON
+            </button>
+            <button id="discussion-mode-btn"
+                    class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer text-sm hover:bg-blue-700 transition-colors">
+                Discussion: OFF
             </button>
         </div>
     </div>
-
     <div id="main-content" class="flex flex-1 overflow-hidden">
         <div id="left-panel" class="w-2/5 bg-editor-panel border-r border-editor-border flex flex-col">
             <div id="conversation-history" class="flex-1 overflow-y-auto p-5"></div>
             <div id="prompt-input-section" class="p-4 bg-editor-toolbar border-t border-editor-border">
-                <textarea
-                    id="prompt-input"
-                    placeholder="Tell VibeFoxes what to create (Ctrl+Enter to submit)...
+                <textarea id="prompt-input" placeholder="Describe what you want to create in English...
 
 Examples:
-- Create a game where this scary creature tries to catch me. Use this asset for the creature: https://ancientbrain.com/uploads/cedric588/1757363656.png
-- Make a bouncing fox animation
-- Make a calculator that screams if pressing a button
-- I want to draw something!"
-                    class="w-full min-h-[180px] p-2.5 bg-editor-input border border-fox-brown text-editor-text rounded resize-y text-sm focus:outline-none focus:ring-2 focus:ring-fox-orange placeholder-fox-cream placeholder-opacity-50"></textarea>
+- Create a cyberpunk cityscape
+- Make a game where a fox is trying to eat me
+- Draw a rotating 3D cube that spins faster each time I click it
+- Display INTEL x86_64 assembly code that follows my mouse cursor to haunt me"
+                          class="w-full min-h-[180px] p-2.5 bg-editor-input border border-editor-border text-editor-text rounded resize-y text-sm focus:outline-none focus:ring-2 focus:ring-fox-orange"></textarea>
                 <div id="prompt-buttons" class="flex gap-2.5 mt-2.5 items-center flex-wrap">
-                    <button
-                        id="send-btn"
-                        disabled
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    <button id="send-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Generate Code
                     </button>
-                    <button
-                        id="clear-btn"
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
+                    <button id="clear-btn"
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
                         Clear History
                     </button>
                 </div>
                 <div class="mt-2.5 flex flex-wrap gap-2">
-                    <button
-                        class="example-btn px-3 py-1.5 bg-editor-input border border-fox-brown text-editor-text rounded cursor-pointer text-xs hover:bg-fox-brown hover:text-fox-cream transition-colors"
-                        data-prompt="Create an animated rainbow gradient background">
-                        Rainbow Background
-                    </button>
-                    <button
-                        class="example-btn px-3 py-1.5 bg-editor-input border border-fox-brown text-editor-text rounded cursor-pointer text-xs hover:bg-fox-brown hover:text-fox-cream transition-colors"
-                        data-prompt="Make an interactive drawing canvas">
-                        Drawing Canvas
-                    </button>
-                    <button
-                        class="example-btn px-3 py-1.5 bg-editor-input border border-fox-brown text-editor-text rounded cursor-pointer text-xs hover:bg-fox-brown hover:text-fox-cream transition-colors"
-                        data-prompt="Create a digital clock showing current time">
-                        Digital Clock
-                    </button>
-                    <button
-                        class="example-btn px-3 py-1.5 bg-editor-input border border-fox-brown text-editor-text rounded cursor-pointer text-xs hover:bg-fox-brown hover:text-fox-cream transition-colors"
-                        data-prompt="Create a bouncing fox animation">
-                        Bouncing Fox
-                    </button>
+                    <button class="example-btn px-3 py-1.5 bg-editor-input border border-editor-border text-editor-text rounded cursor-pointer text-xs hover:bg-editor-toolbar transition-colors"
+                            data-prompt="Create an animated rainbow gradient background">Rainbow Background</button>
+                    <button class="example-btn px-3 py-1.5 bg-editor-input border border-editor-border text-editor-text rounded cursor-pointer text-xs hover:bg-editor-toolbar transition-colors"
+                            data-prompt="Make an interactive drawing canvas">Drawing Canvas</button>
+                    <button class="example-btn px-3 py-1.5 bg-editor-input border border-editor-border text-editor-text rounded cursor-pointer text-xs hover:bg-editor-toolbar transition-colors"
+                            data-prompt="Create a digital clock showing current time">Digital Clock</button>
+                    <button class="example-btn px-3 py-1.5 bg-editor-input border border-editor-border text-editor-text rounded cursor-pointer text-xs hover:bg-editor-toolbar transition-colors"
+                            data-prompt="Generate an image of a futuristic city">Futuristic City</button>
                 </div>
             </div>
         </div>
-
         <div id="right-panel" class="w-3/5 bg-editor-bg flex flex-col">
             <div id="code-editor-section" class="flex-1 flex flex-col overflow-hidden" style="display: none;">
                 <div id="code-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Generated Code:</strong>
-                    <button
-                        id="run-code-btn"
-                        disabled
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    <button id="run-code-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Run Code
                     </button>
-                    <button
-                        id="copy-code-btn"
-                        disabled
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    <button id="copy-code-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Copy
                     </button>
-                    <button
-                        id="undo-btn"
-                        disabled
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    <button id="undo-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Undo
                     </button>
-                    <button
-                        id="redo-btn"
-                        disabled
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    <button id="redo-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Redo
                     </button>
                 </div>
                 <div id="code-display" class="flex-1 overflow-auto p-4 bg-editor-bg">
-                    <pre id="code-content" class="m-0 whitespace-pre-wrap break-words font-mono text-[13px] leading-relaxed text-editor-text">// Your code made by AI is here ^v^</pre>
+                    <pre id="code-content" class="m-0 whitespace-pre-wrap break-words font-mono text-[13px] leading-relaxed text-editor-text">Your code will be here ^^</pre>
                 </div>
             </div>
-
             <div id="output-section" class="h-full border-t border-editor-border flex flex-col transition-all duration-300">
                 <div id="output-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Output:</strong>
-                    <button
-                        id="toggle-code-btn"
-                        class="px-4 py-2 bg-purple-600 text-white rounded cursor-pointer text-sm hover:bg-purple-700 transition-colors">
+                    <button id="toggle-code-btn"
+                            class="px-4 py-2 bg-purple-600 text-white rounded cursor-pointer text-sm hover:bg-purple-700 transition-colors">
                         Show Code
                     </button>
-                    <button
-                        id="clear-output-btn"
-                        class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
+                    <button id="clear-output-btn"
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
                         Clear Output
                     </button>
                     <div id="drawing-tools" class="mt-2.5 hidden gap-2.5 items-center">
-                        <label class="text-editor-text text-sm">
-                            Pen Color:
-                            <input type="color" id="pen-color" value="#000000" class="ml-1">
-                        </label>
-                        <label class="text-editor-text text-sm">
-                            Pen Size:
-                            <input type="range" id="pen-size" min="1" max="20" value="3" class="ml-1">
-                        </label>
-                        <button
-                            id="save-drawing-btn"
-                            class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
+                        <label class="text-editor-text text-sm">Pen Color: <input type="color" id="pen-color" value="#000000" class="ml-1"></label>
+                        <label class="text-editor-text text-sm">Pen Size: <input type="range" id="pen-size" min="1" max="20" value="3" class="ml-1"></label>
+                        <button id="save-drawing-btn"
+                                class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
                             Save Drawing
                         </button>
-                        <button
-                            id="send-to-ai-btn"
-                            class="px-4 py-2 bg-editor-blue text-white rounded cursor-pointer text-sm hover:bg-editor-blue-hover transition-colors">
+                        <button id="send-to-ai-btn"
+                                class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
                             Send to AI
                         </button>
                     </div>
@@ -374,337 +367,13 @@ let ctx = null;
 let lastImageData = null;
 let puterReady = false;
 let autoRunEnabled = true;
+let discussionMode = false;
 
-function initializeWelcomeScreen() {
-    const welcomeScreen = document.getElementById('welcome-screen');
-    const appContainer = document.getElementById('app-container');
-    const welcomeModelSelector = document.getElementById('welcome-model-selector');
-    const welcomeApiKeyInput = document.getElementById('welcome-api-key-input');
-    const welcomeStartBtn = document.getElementById('welcome-start-btn');
-    const welcomeLaterBtn = document.getElementById('welcome-later-btn');
-    const savedApiKey = localStorage.getItem('vibefox_api_key');
-    const savedModel = localStorage.getItem('vibefox_model');
-
-    if (savedApiKey)
-        welcomeApiKeyInput.value = savedApiKey;
-    if (savedModel)
-        welcomeModelSelector.value = savedModel;
-
-    welcomeStartBtn.addEventListener('click', () => {
-        const enteredKey = welcomeApiKeyInput.value.trim();
-        const chosenModel = welcomeModelSelector.value;
-
-        if (enteredKey) {
-            apiKey = enteredKey;
-            localStorage.setItem('vibefox_api_key', enteredKey);
-        }
-        selectedModel = chosenModel;
-        localStorage.setItem('vibefox_model', chosenModel);
-        startApp();
-    });
-
-    welcomeLaterBtn.addEventListener('click', () => {
-        const chosenModel = welcomeModelSelector.value;
-
-        selectedModel = chosenModel;
-        localStorage.setItem('vibefox_model', chosenModel);
-        startApp();
-    });
-
-    function startApp() {
-        welcomeScreen.style.transition = 'opacity 0.5s ease-out';
-        welcomeScreen.style.opacity = '0';
-
-        setTimeout(() => {
-            welcomeScreen.style.display = 'none';
-            appContainer.style.display = 'flex';
-            initializeApp();
-        }, 500);
-    }
-}
-
-initializeWelcomeScreen();
-
-function initializeApp() {
-    apiKeyInput = document.getElementById('api-key-input');
-    setApiKeyBtn = document.getElementById('set-api-key-btn');
-    apiStatus = document.getElementById('api-status');
-    conversationDiv = document.getElementById('conversation-history');
-    promptInput = document.getElementById('prompt-input');
-    sendBtn = document.getElementById('send-btn');
-    clearBtn = document.getElementById('clear-btn');
-    modelSelector = document.getElementById('model-selector');
-    resetChatBtn = document.getElementById('reset-chat-btn');
-    autorunToggleBtn = document.getElementById('autorun-toggle-btn');
-    codeContent = document.getElementById('code-content');
-    runCodeBtn = document.getElementById('run-code-btn');
-    copyCodeBtn = document.getElementById('copy-code-btn');
-    undoBtn = document.getElementById('undo-btn');
-    redoBtn = document.getElementById('redo-btn');
-    toggleCodeBtn = document.getElementById('toggle-code-btn');
-    codeEditorSection = document.getElementById('code-editor-section');
-    outputSection = document.getElementById('output-section');
-    outputDisplay = document.getElementById('output-display');
-    clearOutputBtn = document.getElementById('clear-output-btn');
-    drawingTools = document.getElementById('drawing-tools');
-    penColor = document.getElementById('pen-color');
-    penSize = document.getElementById('pen-size');
-    saveDrawingBtn = document.getElementById('save-drawing-btn');
-    sendToAiBtn = document.getElementById('send-to-ai-btn');
-
-    if (apiKey) {
-        apiStatus.innerHTML = 'API Key Properlly Set';
-        apiStatus.style.color = '#ff6b35';
-    }
-    modelSelector.value = selectedModel;
-    setupEventListeners();
-}
-
-function setupEventListeners() {
-
-    apiKeyInput.addEventListener('input', () => {
-        setApiKeyBtn.disabled = !apiKeyInput.value.trim();
-    });
-
-    setApiKeyBtn.addEventListener('click', () => {
-        const trimmedKey = apiKeyInput.value.trim();
-
-        if (trimmedKey) {
-            apiKey = trimmedKey;
-            apiStatus.innerHTML = 'API Key Set';
-            apiStatus.style.color = '#4ec9b0';
-            sendBtn.disabled = false;
-            apiKeyInput.value = '';
-        }
-    });
-
-    modelSelector.addEventListener('change', (catchedEvent) => {
-        const model = catchedEvent.target.value;
-        selectedModel = model;
-        console.log('Model changed to:', model);
-
-        if (model === 'puter') {
-            if (!PUTER_AVAILABLE) {
-                showNotification('Puter is disabled. Please select an OpenAI model.', 'error');
-                modelSelector.value = 'o3-mini';
-                selectedModel = 'o3-mini';
-                return;
-            }
-            sendBtn.disabled = !puterReady;
-            if (puterReady) {
-                apiStatus.innerHTML = 'puter.ai Ready';
-                apiStatus.style.color = '#4ec9b0';
-            } else {
-                apiStatus.innerHTML = 'puter.ai Loading...';
-                apiStatus.style.color = '#dcdcaa';
-            }
-        } else {
-            sendBtn.disabled = !apiKey;
-            if (apiKey) {
-                apiStatus.innerHTML = 'API Key Set';
-                apiStatus.style.color = '#4ec9b0';
-            } else {
-                apiStatus.innerHTML = '';
-            }
-        }
-    });
-
-    document.querySelectorAll('.example-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            promptInput.value = btn.dataset.prompt;
-            promptInput.focus();
-        });
-    });
-
-    sendBtn.addEventListener('click', () => sendPromptToAI());
-    promptInput.addEventListener('keydown', (catchedKeyPressed) => {
-        if (catchedKeyPressed.ctrlKey && catchedKeyPressed.key === 'Enter')
-            sendPromptToAI();
-    });
-
-    runCodeBtn.addEventListener('click', () => {
-        if (!isHtmlCode(currentCode)) {
-            const warningDiv = document.createElement('div');
-            warningDiv.className = 'p-4 bg-red-900 border border-red-600 rounded-md text-red-200';
-            warningDiv.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <strong class="font-bold">Oh no, seems that this code can't be executed</strong>
-                        <p class="mt-1">This code doesn't appear to be valid HTML or JavaScript that can be executed in the browser. The execution environment only supports HTML/JavaScript code.</p>
-                    </div>
-                </div>
-            `;
-            outputDisplay.innerHTML = '';
-            outputDisplay.appendChild(warningDiv);
-            return;
-        }
-        runCode(currentCode);
-    });
-
-    copyCodeBtn.addEventListener('click', () => {
-        const originalText = copyCodeBtn.innerHTML;
-        navigator.clipboard.writeText(currentCode).then(() => {
-            copyCodeBtn.innerHTML = 'Copied!';
-            setTimeout(() => {
-                copyCodeBtn.innerHTML = originalText;
-            }, 2000);
-        });
-    });
-
-    undoBtn.addEventListener('click', () => {
-        if (historyIndex > 0) {
-            historyIndex--;
-            currentCode = codeHistory[historyIndex];
-            codeContent.innerHTML = currentCode;
-            updateUndoRedoButtons();
-        }
-    });
-
-    redoBtn.addEventListener('click', () => {
-        if (historyIndex < codeHistory.length - 1) {
-            historyIndex++;
-            currentCode = codeHistory[historyIndex];
-            codeContent.innerHTML = currentCode;
-            updateUndoRedoButtons();
-        }
-    });
-
-    clearBtn.addEventListener('click', () => {
-        conversationHistory = [];
-        conversationDiv.innerHTML = '';
-    });
-
-    resetChatBtn.addEventListener('click', () => {
-        conversationHistory = [];
-        conversationDiv.innerHTML = '';
-        currentCode = '';
-        codeHistory = [];
-        historyIndex = -1;
-        codeContent.innerHTML = '// Your code made by AI is here ^v^';
-        outputDisplay.innerHTML = '';
-        drawingTools.style.display = 'none';
-        runCodeBtn.disabled = true;
-        copyCodeBtn.disabled = true;
-        updateUndoRedoButtons();
-    });
-
-    autorunToggleBtn.addEventListener('click', () => {
-        autoRunEnabled = !autoRunEnabled;
-        if (autoRunEnabled) {
-            autorunToggleBtn.innerHTML = 'Auto-run: ON';
-            autorunToggleBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
-            autorunToggleBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-        } else {
-            autorunToggleBtn.innerHTML = 'Auto-run: OFF';
-            autorunToggleBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-            autorunToggleBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
-        }
-    });
-
-    clearOutputBtn.addEventListener('click', () => {
-        outputDisplay.innerHTML = '';
-        drawingTools.style.display = 'none';
-    });
-
-    toggleCodeBtn.addEventListener('click', () => {
-        codeVisible = !codeVisible;
-
-        if (codeVisible) {
-            codeEditorSection.style.display = 'flex';
-            outputSection.style.height = '50%';
-            toggleCodeBtn.innerHTML = 'Hide Code';
-            updateUndoRedoButtons();
-        } else {
-            codeEditorSection.style.display = 'none';
-            outputSection.style.height = '100%';
-            toggleCodeBtn.innerHTML = 'Show Code';
-            if (autoRunEnabled && currentCode && currentCode !== '// Your code made by AI is here ^v^')
-                runCode(currentCode);
-        }
-    });
-
-    saveDrawingBtn.addEventListener('click', () => {
-        if (canvas) {
-            const link = document.createElement('a');
-            link.download = 'edited-image.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        }
-    });
-
-    sendToAiBtn.addEventListener('click', () => {
-        if (canvas) {
-            promptInput.value = 'I have drawn on this image. Here is what I want: ';
-            promptInput.focus();
-            showNotification('Image ready to send. Describe what you want the AI to do with your drawing.', 'info');
-        }
-    });
-}
-
-let apiKeyInput, setApiKeyBtn, apiStatus, conversationDiv, promptInput, sendBtn, clearBtn;
-let modelSelector, resetChatBtn, autorunToggleBtn, codeContent, runCodeBtn, copyCodeBtn;
-let undoBtn, redoBtn, toggleCodeBtn, codeEditorSection, outputSection, outputDisplay;
-let clearOutputBtn, drawingTools, penColor, penSize, saveDrawingBtn, sendToAiBtn;
-let existingNotif = null;
-
-function showNotification(message, type = 'info') {
-    if (existingNotif)
-        existingNotif.remove();
-    const notif = document.createElement('div');
-    notif.className = 'page-notification fixed top-20 right-5 z-50 p-4 rounded-lg shadow-lg max-w-md animate-slide-in';
-    let bgColor, borderColor, iconPath;
-    if (type === 'error') {
-        bgColor = 'bg-red-900';
-        borderColor = 'border-red-600';
-        iconPath = 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z';
-    } else if (type === 'warning') {
-        bgColor = 'bg-yellow-900';
-        borderColor = 'border-yellow-600';
-        iconPath = 'M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z';
-    } else if (type === 'success') {
-        bgColor = 'bg-green-900';
-        borderColor = 'border-green-600';
-        iconPath = 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z';
-    } else {
-        bgColor = 'bg-blue-900';
-        borderColor = 'border-blue-600';
-        iconPath = 'M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z';
-    }
-    notif.className += ` ${bgColor} border ${borderColor} text-white`;
-    notif.innerHTML = `
-        <div class="flex items-start gap-3">
-            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="${iconPath}" clip-rule="evenodd"/>
-            </svg>
-            <div class="flex-1">
-                <p>${message}</p>
-            </div>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-300 font-bold text-xl leading-none">×</button>
-        </div>
-    `;
-    existingNotif = notif;
-    document.body.appendChild(notif);
-    setTimeout(() => {
-        if (notif.parentElement) {
-            notif.style.opacity = '0';
-            notif.style.transition = 'opacity 0.3s';
-            setTimeout(() => {
-                notif.remove();
-                if (existingNotif === notif)
-                    existingNotif = null;
-            }, 300);
-        }
-    }, 5000);
-}
-
-// Puter is used for our local tests, because we don't have an API key. See doc here: https://developer.puter.com/
 const initPuter = () => {
     if (typeof puter !== 'undefined') {
         puterReady = true;
-        console.log('puter.ai loaded and ready (local version used for tests)');
+        console.log('Puter.js loaded and ready (FOR TESTS ONLY, PUTER IS NOT SUPPORTED ON ANCIENTBRAIN WEBSITE).');
+        updateSendButtonState();
         return true;
     }
     return false;
@@ -719,181 +388,393 @@ if (!initPuter()) {
             if (puterReady) {
                 const modelSelect = document.getElementById('model-selector');
                 const statusEl = document.getElementById('api-status');
-                const btnEl = document.getElementById('send-btn');
-
-                if (modelSelect && modelSelect.value === 'puter') {
-                    if (btnEl)
-                        btnEl.disabled = false;
-                    if (statusEl) {
-                        statusEl.innerHTML = 'puter.ai Ready';
-                        statusEl.style.color = '#4ec9b0';
-                    }
-                }
+                if (modelSelect && modelSelect.value === 'puter')
+                    updateSendButtonState();
             }
         }
     }, 50);
 }
 
-async function sendPromptToAI() {
-    const prompt = promptInput.value.trim();
+const apiKeyInput = document.getElementById('api-key-input');
+const setApiKeyBtn = document.getElementById('set-api-key-btn');
+const apiStatus = document.getElementById('api-status');
+const conversationDiv = document.getElementById('conversation-history');
+const promptInput = document.getElementById('prompt-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const modelSelector = document.getElementById('model-selector');
+const resetChatBtn = document.getElementById('reset-chat-btn');
+const autorunToggleBtn = document.getElementById('autorun-toggle-btn');
+const discussionModeBtn = document.getElementById('discussion-mode-btn');
+const codeContent = document.getElementById('code-content');
+const runCodeBtn = document.getElementById('run-code-btn');
+const copyCodeBtn = document.getElementById('copy-code-btn');
+const undoBtn = document.getElementById('undo-btn');
+const redoBtn = document.getElementById('redo-btn');
+const toggleCodeBtn = document.getElementById('toggle-code-btn');
+const codeEditorSection = document.getElementById('code-editor-section');
+const outputSection = document.getElementById('output-section');
+const outputDisplay = document.getElementById('output-display');
+const clearOutputBtn = document.getElementById('clear-output-btn');
+const drawingTools = document.getElementById('drawing-tools');
+const penColor = document.getElementById('pen-color');
+const penSize = document.getElementById('pen-size');
+const saveDrawingBtn = document.getElementById('save-drawing-btn');
+const sendToAiBtn = document.getElementById('send-to-ai-btn');
+const welcomeScreen = document.getElementById('welcome-screen');
+const welcomeModelSelector = document.getElementById('welcome-model-selector');
+const welcomeApiInput = document.getElementById('welcome-api-input');
+const welcomeStartBtn = document.getElementById('welcome-start-btn');
+const welcomeLaterBtn = document.getElementById('welcome-later-btn');
+const loadingModal = document.getElementById('loading-modal');
+const playGameBtn = document.getElementById('play-game-btn');
+const foxGameContainer = document.getElementById('fox-game-container');
+const gameCanvas = document.getElementById('game-canvas');
+const gameScore = document.getElementById('game-score');
+const closeGameBtn = document.getElementById('close-game-btn');
+let gameCtx = null;
+let gameRunning = false;
+let gameScore_ = 0;
+let foxY = 150;
+let foxVelocity = 0;
+let obstacles = [];
+let gameAnimationId = null;
+let foxImage = null;
+foxImage = new Image();
+foxImage.src = 'https://ancientbrain.com/uploads/cedric588/favicon.ico'; // Pixel art inspired by this picture https://fity.club/lists/2025/easy-pixel-art/
+
+function initializeApp() {
+    const savedModel = localStorage.getItem('vibefoxes-model');
+    const savedApiKey = localStorage.getItem('vibefoxes-apikey');
+
+    if (savedModel) {
+        selectedModel = savedModel;
+        modelSelector.value = savedModel;
+        welcomeModelSelector.value = savedModel;
+    }
+    if (savedApiKey) {
+        apiKey = savedApiKey;
+        apiKeyInput.value = savedApiKey;
+        welcomeApiInput.value = savedApiKey;
+    }
+    updateSendButtonState();
+}
+
+function updateSendButtonState() {
     const usePuter = selectedModel === 'puter';
 
+    if (usePuter) {
+        sendBtn.disabled = !puterReady;
+        if (puterReady) {
+            apiStatus.textContent = 'Puter.ai Ready';
+            apiStatus.style.color = '#ff6b35';
+        } else {
+            apiStatus.textContent = 'Puter.ai Loading...';
+            apiStatus.style.color = '#f5e6d3';
+        }
+    } else {
+        sendBtn.disabled = !apiKey;
+        if (apiKey) {
+            apiStatus.textContent = '✓ API Key Set';
+            apiStatus.style.color = '#ff6b35';
+        } else {
+            apiStatus.textContent = '';
+        }
+    }
+}
+
+welcomeStartBtn.addEventListener('click', () => {
+    const selectedModelValue = welcomeModelSelector.value;
+    const apiKeyValue = welcomeApiInput.value.trim();
+
+    localStorage.setItem('vibefoxes-model', selectedModelValue);
+    if (apiKeyValue)
+        localStorage.setItem('vibefoxes-apikey', apiKeyValue);
+    selectedModel = selectedModelValue;
+    modelSelector.value = selectedModelValue;
+    if (apiKeyValue)
+        apiKey = apiKeyValue;
+    closeWelcomeScreen();
+});
+
+welcomeLaterBtn.addEventListener('click', () => {
+    closeWelcomeScreen();
+});
+
+function closeWelcomeScreen() {
+    welcomeScreen.classList.add('fade-out-screen');
+    setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+        updateSendButtonState();
+    }, 500);
+}
+
+function showLoadingModal() {
+    loadingModal.style.display = 'flex';
+}
+
+function hideLoadingModal() {
+    loadingModal.style.display = 'none';
+    stopDinoGame();
+}
+
+playGameBtn.addEventListener('click', () => {
+    loadingModal.style.display = 'none';
+    startDinoGame();
+});
+
+closeGameBtn.addEventListener('click', () => {
+    stopDinoGame();
+    if (sendBtn.textContent === 'Generating...')
+        showLoadingModal();
+});
+
+function startDinoGame() {
+    foxGameContainer.style.display = 'block';
+    gameCtx = gameCanvas.getContext('2d');
+    gameRunning = true;
+    gameScore_ = 0;
+    foxY = 150;
+    foxVelocity = 0;
+    obstacles = [];
+    document.addEventListener('keydown', handleGameKeyPress);
+    updateGame();
+}
+
+function stopDinoGame() {
+    gameRunning = false;
+    foxGameContainer.style.display = 'none';
+    document.removeEventListener('keydown', handleGameKeyPress);
+    if (gameAnimationId)
+        cancelAnimationFrame(gameAnimationId);
+}
+
+function handleGameKeyPress(keyPressed) {
+    if (keyPressed.code === 'Space' && gameRunning) {
+        keyPressed.preventDefault();
+        if (foxY >= 150)
+            foxVelocity = -12;
+    }
+}
+
+function updateGame() {
+    if (!gameRunning)
+        return;
+    gameCtx.fillStyle = '#f5e6d3';
+    gameCtx.fillRect(0, 0, 800, 200);
+    foxVelocity += 0.6;
+    foxY += foxVelocity;
+    if (foxY >= 150) {
+        foxY = 150;
+        foxVelocity = 0;
+    }
+    gameCtx.fillStyle = '#6b4423';
+    gameCtx.fillRect(0, 180, 800, 20);
+    if (foxImage && foxImage.complete) {
+        gameCtx.imageSmoothingEnabled = false;
+        gameCtx.drawImage(foxImage, 50, foxY - 30, 40, 40);
+    } else {
+        gameCtx.font = '40px Arial';
+        gameCtx.fillText('🦊', 50, foxY);
+    }
+    if (Math.random() < 0.02)
+        obstacles.push({ x: 800, width: 20, height: 40 });
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obs = obstacles[i];
+        obs.x -= 5;
+        gameCtx.fillStyle = '#d95d39';
+        gameCtx.fillRect(obs.x, 140, obs.width, obs.height);
+        if (obs.x < 90 && obs.x > 30 && foxY + 30 > 140) {
+            gameRunning = false;
+            console.log('Game Over! Score: ' + gameScore_);
+            stopDinoGame();
+            return;
+        }
+        if (obs.x < -obs.width) {
+            obstacles.splice(i, 1);
+            gameScore_++;
+        }
+    }
+    gameScore.textContent = gameScore_;
+    gameAnimationId = requestAnimationFrame(updateGame);
+}
+
+initializeApp();
+
+apiKeyInput.addEventListener('input', () => {
+    setApiKeyBtn.disabled = !apiKeyInput.value.trim();
+});
+
+setApiKeyBtn.addEventListener('click', () => {
+    apiKey = apiKeyInput.value.trim();
+    if (apiKey) {
+        localStorage.setItem('vibefoxes-apikey', apiKey);
+        apiStatus.textContent = '✓ API Key Set';
+        apiStatus.style.color = '#ff6b35';
+        updateSendButtonState();
+        apiKeyInput.value = '';
+    }
+});
+
+modelSelector.addEventListener('change', (chooseAModel) => {
+    selectedModel = chooseAModel.target.value;
+    localStorage.setItem('vibefoxes-model', selectedModel);
+    console.log('Model changed to:', selectedModel);
+    updateSendButtonState();
+});
+
+document.querySelectorAll('.example-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        promptInput.value = btn.dataset.prompt;
+        promptInput.focus();
+    });
+});
+
+sendBtn.addEventListener('click', () => sendPromptToAI());
+promptInput.addEventListener('keydown', (pressedKeys) => {
+    if (pressedKeys.ctrlKey && pressedKeys.key === 'Enter') {
+        if (!sendBtn.disabled)
+            sendPromptToAI();
+    }
+});
+
+async function sendPromptToAI() {
+    const prompt = promptInput.value.trim();
     if (!prompt)
         return;
-    if (usePuter && !PUTER_AVAILABLE) {
-        showNotification('Puter is disabled. Select an OpenAI model instead.', 'error');
-        return;
-    }
+
+    // If Puter selected, we don't require an OpenAI API key -- again, this is only for local testing -- Jules
+    const usePuter = selectedModel === 'puter';
     if (!usePuter && !apiKey) {
-        showNotification('Please choose your model first!', 'warning');
+        console.log('Please set your OpenAI API key');
+        addMessageToConversation('assistant', 'Please set your OpenAI API key');
         return;
     }
     if (usePuter && !puterReady) {
-        showNotification('Puter is still loading. Please wait a moment and try again.', 'warning');
+        console.warn('Puter is still loading. Please wait a moment and try again.');
+        addMessageToConversation('assistant', 'Puter is still loading. Please wait a moment and try again.');
         return;
     }
     addMessageToConversation('user', prompt);
     promptInput.value = '';
     sendBtn.disabled = true;
-    sendBtn.innerHTML = 'Generating...';
-
+    sendBtn.textContent = 'Generating...';
+    showLoadingModal();
     const messages = buildConversationContext();
-
     try {
         let aiResponse = '';
 
-        if (usePuter)
-            aiResponse = await getPuterResponse(prompt);
-        else
-            aiResponse = await getOpenAIResponse(messages);
-        addMessageToConversation('assistant', aiResponse);
-        const extractedCode = extractCode(aiResponse);
-        if (extractedCode) {
-            updateCode(extractedCode);
-
-            if (autoRunEnabled) {
-                if (isHtmlCode(extractedCode))
-                    runCode(extractedCode);
-                else
-                    showAutoRunWarning();
-            }
-        } else
-            handleNonCodeResponse(aiResponse);
-
-    } catch (error) {
-        console.error('Error:', error);
-        if (error && error.error && error.error.code === 'moderation_failed') {
-            addMessageToConversation('assistant', 'Error: Content moderation failed. Puter.ai has rejected this request. Please try rephrasing your prompt or use an OpenAI model instead.');
-            showNotification('Puter.ai moderation failed. Try rephrasing or switch to OpenAI model.', 'error');
-        } else if (error.message && (error.message.includes('Incorrect API key') || error.message.includes('Invalid API key') || error.message.includes('API key provided'))) {
-            addMessageToConversation('assistant', 'Error: Invalid OpenAI API key. Please check your API key and try again. You can find your API key at https://platform.openai.com/account/api-keys');
-            showNotification('Oh No, invalid API key! Please enter a valid OpenAI API key.', 'error');
-            apiKey = '';
-            apiStatus.innerHTML = 'Invalid API Key';
-            apiStatus.style.color = '#ff4444';
-            sendBtn.disabled = true;
-        } else {
-            const errorMessage = error.message || (error.error && error.error.message) || 'Unknown error';
-            addMessageToConversation('assistant', `Error: ${errorMessage}`);
-            showNotification('Error communicating with the AI provider. Check console for details.', 'error');
-        }
-    } finally {
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = 'Generate Code';
-    }
-}
-
-async function getPuterResponse(prompt) {
-    if (!PUTER_AVAILABLE)
-        throw new Error('Puter is disabled. Please use OpenAI API instead.');
-    if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
-        throw new Error('Puter library not loaded or puter.ai.chat not available.');
-    console.log('Sending request to puter.ai...');
-    const systemInstructions = `You are a coding assistant. Generate complete, runnable code based on the user's request.
+        if (usePuter) {
+            if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
+                throw new Error('Puter library not loaded or puter.ai.chat not available.');
+            console.log('Sending request to Puter');
+            const systemInstructions = discussionMode
+                ? `You are an AI assistant. Have natural conversations with the user. Answer questions, discuss topics, and be helpful. DO NOT generate code unless explicitly asked. Just chat naturally.`
+                : `You are a coding assistant. Generate complete, runnable code based on the user's request.
 - For animations/visuals: Provide full HTML with embedded CSS and JavaScript
 - Wrap all code in markdown code blocks with language tags (html, javascript, etc.)
 - Make code production-ready with comments
 - The code should be immediately executable
 
 `;
-    let fullPrompt = systemInstructions;
-    const recentHistory = conversationHistory.slice(-10);
-    if (recentHistory.length > 0) {
-        fullPrompt += '\n\nConversation history:\n';
-        recentHistory.forEach(msg => {
-            const role = msg.role === 'user' ? 'User' : 'Assistant';
-            fullPrompt += `${role}: ${msg.content}\n\n`;
-        });
-    }
-    if (currentCode)
-        fullPrompt += `\nCurrent code in editor:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n`;
-    fullPrompt += `User request: ${prompt}`;
-    const puterResult = await puter.ai.chat(fullPrompt);
-    console.log('Puter response:', puterResult);
-    
-    // Check if Puter returned an error
-    if (puterResult && puterResult.success === false && puterResult.error) {
-        throw puterResult;
-    }
-    
-    let aiResponse = '';
-    if (typeof puterResult === 'string')
-        aiResponse = puterResult;
-    else if (puterResult && puterResult.message) {
-        if (typeof puterResult.message === 'string')
-            aiResponse = puterResult.message;
-        else if (puterResult.message.content)
-            aiResponse = puterResult.message.content;
-    } else if (puterResult && puterResult.response)
-        aiResponse = puterResult.response;
-    else if (puterResult && puterResult.text)
-        aiResponse = puterResult.text;
-    else if (puterResult && puterResult.content)
-        aiResponse = puterResult.content;
-    else
-        aiResponse = JSON.stringify(puterResult, null, 2);
-    if (!aiResponse)
-        throw new Error('Empty response from puter.ai');
-    return aiResponse;
-}
+            let fullPrompt = systemInstructions;
+            const recentHistory = conversationHistory.slice(-10);
 
-async function getOpenAIResponse(messages) {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-            model: selectedModel,
-            messages: messages,
-            temperature: 0.7,
-            max_tokens: 2000
-        })
-    });
-    const data = await response.json();
-    if (data.error)
-        throw new Error(data.error.message);
-    return data.choices[0].message.content;
-}
+            if (recentHistory.length > 0) {
+                fullPrompt += '\n\nConversation history:\n';
+                recentHistory.forEach(msg => {
+                    const role = msg.role === 'user' ? 'User' : 'Assistant';
+                    fullPrompt += `${role}: ${msg.content}\n\n`;
+                });
+            }
+            if (currentCode && !discussionMode)
+                fullPrompt += `\nCurrent code in editor:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n`;
+            fullPrompt += `User request: ${prompt}`;
+            const puterResult = await puter.ai.chat(fullPrompt);
+            console.log('Puter result::', puterResult);
 
-function handleNonCodeResponse(aiResponse) {
-    if (aiResponse.startsWith('http') || aiResponse.startsWith('data:image')) {
-        const img = new Image();
-        img.onload = () => setupCanvas(img);
-        img.onerror = () => {
-            outputDisplay.innerHTML = `<div>Received image link but failed to load: ${aiResponse}</div>`;
-        };
-        img.src = aiResponse;
-        outputDisplay.innerHTML = '';
-        outputDisplay.appendChild(img);
+            if (typeof puterResult === 'string') {
+                aiResponse = puterResult;
+            } else if (puterResult && puterResult.message) {
+                if (typeof puterResult.message === 'string') {
+                    aiResponse = puterResult.message;
+                } else if (puterResult.message.content) {
+                    aiResponse = puterResult.message.content;
+                }
+            } else if (puterResult && puterResult.response) {
+                aiResponse = puterResult.response;
+            } else if (puterResult && puterResult.text) {
+                aiResponse = puterResult.text;
+            } else if (puterResult && puterResult.content) {
+                aiResponse = puterResult.content;
+            } else {
+                aiResponse = JSON.stringify(puterResult, null, 2);
+            }
+            if (!aiResponse)
+                throw new Error('Empty response from Puter.ai');
+        } else {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: selectedModel,
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error)
+                throw new Error(data.error.message);
+            aiResponse = data.choices[0].message.content;
+        }
+        addMessageToConversation('assistant', aiResponse);
+
+        if (!discussionMode) {
+            const extractedCode = extractCode(aiResponse);
+
+            if (extractedCode) {
+                updateCode(extractedCode);
+
+                if (autoRunEnabled)
+                    runCode(extractedCode);
+            } else {
+                if (aiResponse.startsWith('http') || aiResponse.startsWith('data:image')) {
+                    const img = new Image();
+                    img.onload = () => setupCanvas(img);
+                    img.onerror = () => {
+                        outputDisplay.innerHTML = `<div>Received image link but failed to load: ${aiResponse}</div>`;
+                    };
+                    img.src = aiResponse;
+                    outputDisplay.innerHTML = '';
+                    outputDisplay.appendChild(img);
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        addMessageToConversation('assistant', `Error: ${error.message}`);
+        console.warn('Error communicating with the AI provider. Check console for details.');
+    } finally {
+        hideLoadingModal();
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Generate Code';
+        updateSendButtonState();
     }
 }
 
 function buildConversationContext() {
     const systemMessage = {
         role: 'system',
-        content: `You are a coding assistant for a vibe coding app. Generate executable JavaScript code based on user descriptions.
+        content: discussionMode 
+            ? `You are a friendly AI assistant. Have natural conversations with the user. Answer questions, discuss topics, and be helpful. DO NOT generate code unless explicitly asked. Just chat naturally.`
+            : `You are a coding assistant for a vibe coding app. Generate executable JavaScript code based on user descriptions.
 
 Rules:
 - If the user asks for an animation or visual: Generate complete HTML/CSS/JS code that can run in a browser
@@ -932,9 +813,9 @@ Remember: The user expects to see CODE they can run immediately. Always include 
 
     const messages = [systemMessage];
     const recentHistory = conversationHistory.slice(-10);
-    messages.push(...recentHistory);
 
-    if (currentCode) {
+    messages.push(...recentHistory);
+    if (currentCode && !discussionMode) {
         messages.push({
             role: 'system',
             content: `Current code in the editor:\n\`\`\`javascript\n${currentCode}\n\`\`\``
@@ -953,58 +834,9 @@ function extractCode(text) {
     return null;
 }
 
-function isHtmlCode(code) {
-    const htmlPatterns = [
-        /<!DOCTYPE/i,
-        /<html/i,
-        /<head/i,
-        /<body/i,
-        /<div/i,
-        /<canvas/i,
-        /<script/i,
-        /<style/i
-    ];
-
-    const isHtml = htmlPatterns.some(pattern => pattern.test(code));
-    const isPureJs = !code.includes('def ') &&
-                     !code.includes('print(') &&
-                     !code.includes('import ') &&
-                     !code.includes('class ') &&
-                     !code.includes('public static') &&
-                     !code.includes('package ') &&
-                     (code.includes('function') ||
-                      code.includes('const ') ||
-                      code.includes('let ') ||
-                      code.includes('var ') ||
-                      code.includes('console.log'));
-    return isHtml || isPureJs;
-}
-
-function showAutoRunWarning() {
-    const warningDiv = document.createElement('div');
-    warningDiv.className = 'p-4 bg-yellow-900 border border-yellow-600 rounded-md text-yellow-200';
-    warningDiv.innerHTML = `
-        <div class="flex items-start gap-3">
-            <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-            <div>
-                <strong class="font-bold">Auto-run turned off</strong>
-                <p class="mt-1">Auto-run only works with HTML/JavaScript code. The generated code is likely another language, sorry, we don't support autorun with that :-(</p>
-            </div>
-        </div>
-    `;
-
-    outputDisplay.innerHTML = '';
-    outputDisplay.appendChild(warningDiv);
-
-    if (!codeVisible)
-        toggleCodeBtn.click();
-}
-
 function updateCode(newCode) {
     currentCode = newCode;
-    codeContent.innerHTML = newCode;
+    codeContent.textContent = newCode;
 
     if (historyIndex < codeHistory.length - 1)
         codeHistory = codeHistory.slice(0, historyIndex + 1);
@@ -1016,33 +848,39 @@ function updateCode(newCode) {
 }
 
 function addMessageToConversation(role, content) {
-    const messageDiv = document.createElement('div');
-    const label = document.createElement('div');
-    const text = document.createElement('div');
-
     conversationHistory.push({ role, content });
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'animate-slide-in';
+
     if (role === 'user')
-        messageDiv.className = 'mb-4 p-3 rounded-md bg-editor-message-user ml-5';
+        messageDiv.className += ' mb-4 p-3 rounded-md bg-editor-message-user ml-5';
     else
-        messageDiv.className = 'mb-4 p-3 rounded-md bg-editor-toolbar mr-5';
+        messageDiv.className += ' mb-4 p-3 rounded-md bg-editor-toolbar mr-5';
+    const label = document.createElement('div');
     label.className = 'font-bold mb-1 text-xs opacity-80';
-    label.innerHTML = role === 'user' ? 'You:' : 'AI Assistant:';
-    text.innerHTML = content;
+    label.textContent = role === 'user' ? 'You:' : 'AI Assistant:';
+    const text = document.createElement('div');
+    text.textContent = content;
     messageDiv.appendChild(label);
     messageDiv.appendChild(text);
     conversationDiv.appendChild(messageDiv);
     conversationDiv.scrollTop = conversationDiv.scrollHeight;
 }
 
+runCodeBtn.addEventListener('click', () => {
+    runCode(currentCode);
+});
+
 function runCode(code) {
     outputDisplay.innerHTML = '';
     try {
         if (code.includes('<!DOCTYPE') || code.includes('<html')) {
-            const iframe = document.createElement('iframe');
+            const iframe = document.createElement('iframe'); // there was a bad code isolation, canva generated was destroying the body. Took me 3h to find that :( -- Cédric
             iframe.style.width = '100%';
             iframe.style.height = '100%';
             iframe.style.border = 'none';
             outputDisplay.appendChild(iframe);
+
             const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
             iframeDoc.open();
             iframeDoc.write(code);
@@ -1058,26 +896,129 @@ function runCode(code) {
     }
 }
 
+copyCodeBtn.addEventListener('click', () => {
+    navigator.clipboard.writeText(currentCode).then(() => {
+        const originalText = copyCodeBtn.textContent;
+        copyCodeBtn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            copyCodeBtn.textContent = originalText;
+        }, 2000);
+    });
+});
+
+undoBtn.addEventListener('click', () => {
+    if (historyIndex > 0) {
+        historyIndex--;
+        currentCode = codeHistory[historyIndex];
+        codeContent.textContent = currentCode;
+        updateUndoRedoButtons();
+    }
+});
+
+redoBtn.addEventListener('click', () => {
+    if (historyIndex < codeHistory.length - 1) {
+        historyIndex++;
+        currentCode = codeHistory[historyIndex];
+        codeContent.textContent = currentCode;
+        updateUndoRedoButtons();
+    }
+});
+
 function updateUndoRedoButtons() {
     undoBtn.disabled = historyIndex <= 0;
     redoBtn.disabled = historyIndex >= codeHistory.length - 1;
 }
 
+clearBtn.addEventListener('click', () => {
+    conversationHistory = [];
+    conversationDiv.innerHTML = '';
+});
+
+resetChatBtn.addEventListener('click', () => {
+    conversationHistory = [];
+    conversationDiv.innerHTML = '';
+    currentCode = '';
+    codeHistory = [];
+    historyIndex = -1;
+    codeContent.textContent = 'Your code will be here';
+    outputDisplay.innerHTML = '';
+    drawingTools.style.display = 'none';
+    runCodeBtn.disabled = true;
+    copyCodeBtn.disabled = true;
+    updateUndoRedoButtons();
+});
+
+autorunToggleBtn.addEventListener('click', () => {
+    autoRunEnabled = !autoRunEnabled;
+    if (autoRunEnabled) {
+        autorunToggleBtn.textContent = 'Auto-run: ON';
+        autorunToggleBtn.classList.remove('bg-gray-600');
+        autorunToggleBtn.classList.add('bg-green-600');
+        autorunToggleBtn.classList.remove('hover:bg-gray-700');
+        autorunToggleBtn.classList.add('hover:bg-green-700');
+    } else {
+        autorunToggleBtn.textContent = 'Auto-run: OFF';
+        autorunToggleBtn.classList.remove('bg-green-600');
+        autorunToggleBtn.classList.add('bg-gray-600');
+        autorunToggleBtn.classList.remove('hover:bg-green-700');
+        autorunToggleBtn.classList.add('hover:bg-gray-700');
+    }
+});
+
+discussionModeBtn.addEventListener('click', () => {
+    discussionMode = !discussionMode;
+    if (discussionMode) {
+        discussionModeBtn.textContent = 'Discussion: ON';
+        discussionModeBtn.classList.remove('bg-blue-600');
+        discussionModeBtn.classList.add('bg-purple-600');
+        discussionModeBtn.classList.remove('hover:bg-blue-700');
+        discussionModeBtn.classList.add('hover:bg-purple-700');
+    } else {
+        discussionModeBtn.textContent = 'Discussion: OFF';
+        discussionModeBtn.classList.remove('bg-purple-600');
+        discussionModeBtn.classList.add('bg-blue-600');
+        discussionModeBtn.classList.remove('hover:bg-purple-700');
+        discussionModeBtn.classList.add('hover:bg-blue-700');
+    }
+});
+
+clearOutputBtn.addEventListener('click', () => {
+    outputDisplay.innerHTML = '';
+    drawingTools.style.display = 'none';
+});
+
 let codeVisible = false;
+toggleCodeBtn.addEventListener('click', () => {
+    codeVisible = !codeVisible;
+
+    if (codeVisible) {
+        codeEditorSection.style.display = 'flex';
+        outputSection.style.height = '50%';
+        toggleCodeBtn.textContent = 'Hide Code';
+        updateUndoRedoButtons();
+    } else {
+        codeEditorSection.style.display = 'none';
+        outputSection.style.height = '100%';
+        toggleCodeBtn.textContent = 'Show Code';
+        if (autoRunEnabled && currentCode && currentCode !== 'Your code will be here')
+            runCode(currentCode);
+    }
+});
 
 function setupCanvas(img) {
-    const container = document.createElement('div');
-
     canvas = document.createElement('canvas');
     canvas.id = 'output-canvas';
     canvas.className = 'border border-gray-300 bg-white cursor-crosshair';
     canvas.width = img.width;
     canvas.height = img.height;
+
+    const container = document.createElement('div');
     container.id = 'canvas-container';
     container.className = 'relative inline-block';
     container.appendChild(canvas);
     outputDisplay.innerHTML = '';
     outputDisplay.appendChild(container);
+
     ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
     lastImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -1088,23 +1029,23 @@ function setupCanvas(img) {
     canvas.addEventListener('mouseout', stopDrawing);
 }
 
-function startDrawing(catchedEvent) {
-    const rect = canvas.getBoundingClientRect();
-    const x = catchedEvent.clientX - rect.left;
-    const y = catchedEvent.clientY - rect.top;
-
+function startDrawing(whenDrawing) {
     isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = whenDrawing.clientX - rect.left;
+    const y = whenDrawing.clientY - rect.top;
+
     ctx.beginPath();
     ctx.moveTo(x, y);
 }
 
-function draw(catchedEvent) {
+function draw(whenDrawing) {
     if (!isDrawing)
         return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = catchedEvent.clientX - rect.left;
-    const y = catchedEvent.clientY - rect.top;
+    const x = whenDrawing.clientX - rect.left;
+    const y = whenDrawing.clientY - rect.top;
 
     ctx.strokeStyle = penColor.value;
     ctx.lineWidth = penSize.value;
@@ -1117,4 +1058,22 @@ function stopDrawing() {
     isDrawing = false;
 }
 
-console.log('Hello, how are you? :-)');
+saveDrawingBtn.addEventListener('click', () => {
+    if (canvas) {
+        const link = document.createElement('a');
+        link.download = 'edited-image.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+});
+
+sendToAiBtn.addEventListener('click', () => {
+    if (canvas) {
+        promptInput.value = `I've drawn on this image. Here's what I want: `;
+        promptInput.focus();
+        console.log('Image ready to send. Describe what you want the AI to do with your drawing.');
+    }
+});
+
+console.log('Vibe Coding App initialized!');
+console.log('Puter.ai status:', puterReady ? 'Ready' : 'Loading...');
