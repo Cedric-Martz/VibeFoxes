@@ -101,6 +101,37 @@ document.write(`
         background: #ff8555;
     }
 
+    .resize-divider {
+        position: absolute;
+        background: transparent;
+        z-index: 10;
+        transition: background 0.2s;
+    }
+
+    .resize-divider.active {
+        background: rgba(255, 107, 53, 0.3);
+    }
+
+    .resize-divider.vertical {
+        width: 8px;
+        height: 100%;
+        cursor: ew-resize;
+    }
+
+    .resize-divider.horizontal {
+        width: 100%;
+        height: 8px;
+        cursor: ns-resize;
+    }
+
+    .resize-divider:hover {
+        background: rgba(255, 107, 53, 0.5);
+    }
+
+    .customize-mode .resize-divider {
+        background: rgba(255, 107, 53, 0.2);
+    }
+
     #welcome-screen {
         position: fixed;
         top: 0;
@@ -263,9 +294,14 @@ document.write(`
                     class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer text-sm hover:bg-blue-700 transition-colors">
                 Discussion: OFF
             </button>
+            <button id="customize-mode-btn"
+                    class="px-4 py-2 bg-yellow-600 text-white rounded cursor-pointer text-sm hover:bg-yellow-700 transition-colors">
+                Customize: OFF
+            </button>
         </div>
     </div>
-    <div id="main-content" class="flex flex-1 overflow-hidden">
+    <div id="main-content" class="flex flex-1 overflow-hidden relative">
+        <div id="vertical-divider" class="resize-divider vertical" style="display: none; left: 40%; margin-left: -4px;"></div>
         <div id="left-panel" class="w-2/5 bg-editor-panel border-r border-editor-border flex flex-col">
             <div id="conversation-history" class="flex-1 overflow-y-auto p-5"></div>
             <div id="prompt-input-section" class="p-4 bg-editor-toolbar border-t border-editor-border">
@@ -299,7 +335,8 @@ Examples:
                 </div>
             </div>
         </div>
-        <div id="right-panel" class="w-3/5 bg-editor-bg flex flex-col">
+        <div id="right-panel" class="w-3/5 bg-editor-bg flex flex-col relative">
+            <div id="horizontal-divider" class="resize-divider horizontal" style="display: none; top: 50%; margin-top: -4px;"></div>
             <div id="code-editor-section" class="flex-1 flex flex-col overflow-hidden" style="display: none;">
                 <div id="code-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Generated Code:</strong>
@@ -368,6 +405,9 @@ let lastImageData = null;
 let puterReady = false;
 let autoRunEnabled = true;
 let discussionMode = false;
+let customizeMode = false;
+let isDragging = false;
+let currentDivider = null;
 
 const initPuter = () => {
     if (typeof puter !== 'undefined') {
@@ -406,6 +446,7 @@ const modelSelector = document.getElementById('model-selector');
 const resetChatBtn = document.getElementById('reset-chat-btn');
 const autorunToggleBtn = document.getElementById('autorun-toggle-btn');
 const discussionModeBtn = document.getElementById('discussion-mode-btn');
+const customizeModeBtn = document.getElementById('customize-mode-btn');
 const codeContent = document.getElementById('code-content');
 const runCodeBtn = document.getElementById('run-code-btn');
 const copyCodeBtn = document.getElementById('copy-code-btn');
@@ -432,6 +473,12 @@ const foxGameContainer = document.getElementById('fox-game-container');
 const gameCanvas = document.getElementById('game-canvas');
 const gameScore = document.getElementById('game-score');
 const closeGameBtn = document.getElementById('close-game-btn');
+const leftPanel = document.getElementById('left-panel');
+const rightPanel = document.getElementById('right-panel');
+const mainContent = document.getElementById('main-content');
+const verticalDivider = document.getElementById('vertical-divider');
+const horizontalDivider = document.getElementById('horizontal-divider');
+
 let gameCtx = null;
 let gameRunning = false;
 let gameScore_ = 0;
@@ -982,6 +1029,80 @@ discussionModeBtn.addEventListener('click', () => {
     }
 });
 
+customizeModeBtn.addEventListener('click', () => {
+    customizeMode = !customizeMode;
+    if (customizeMode) {
+        customizeModeBtn.textContent = 'Customize: ON';
+        customizeModeBtn.classList.remove('bg-yellow-600');
+        customizeModeBtn.classList.add('bg-orange-600');
+        customizeModeBtn.classList.remove('hover:bg-yellow-700');
+        customizeModeBtn.classList.add('hover:bg-orange-700');
+        verticalDivider.style.display = 'block';
+        if (codeEditorSection.style.display !== 'none')
+            horizontalDivider.style.display = 'block';
+        mainContent.classList.add('customize-mode');
+    } else {
+        customizeModeBtn.textContent = 'Customize: OFF';
+        customizeModeBtn.classList.remove('bg-orange-600');
+        customizeModeBtn.classList.add('bg-yellow-600');
+        customizeModeBtn.classList.remove('hover:bg-orange-700');
+        customizeModeBtn.classList.add('hover:bg-yellow-700');
+        verticalDivider.style.display = 'none';
+        horizontalDivider.style.display = 'none';
+        mainContent.classList.remove('customize-mode');
+    }
+});
+
+verticalDivider.addEventListener('mousedown', (clickElement) => {
+    if (!customizeMode) return;
+    isDragging = true;
+    currentDivider = 'vertical';
+    verticalDivider.classList.add('active');
+    clickElement.preventDefault();
+});
+
+horizontalDivider.addEventListener('mousedown', (clickElement) => {
+    if (!customizeMode) return;
+    isDragging = true;
+    currentDivider = 'horizontal';
+    horizontalDivider.classList.add('active');
+    clickElement.preventDefault();
+});
+
+document.addEventListener('mousemove', (clickElement) => {
+    if (!isDragging || !customizeMode)
+        return;
+
+    if (currentDivider === 'vertical') {
+        const containerWidth = mainContent.offsetWidth;
+        const newLeftWidth = (clickElement.clientX / containerWidth) * 100;
+        if (newLeftWidth >= 20 && newLeftWidth <= 80) {
+            leftPanel.style.width = newLeftWidth + '%';
+            rightPanel.style.width = (100 - newLeftWidth) + '%';
+            verticalDivider.style.left = newLeftWidth + '%';
+        }
+    } else if (currentDivider === 'horizontal') {
+        const panelHeight = rightPanel.offsetHeight;
+        const offsetY = clickElement.clientY - rightPanel.getBoundingClientRect().top;
+        const newCodeHeight = (offsetY / panelHeight) * 100;
+
+        if (newCodeHeight >= 20 && newCodeHeight <= 80) {
+            codeEditorSection.style.height = newCodeHeight + '%';
+            outputSection.style.height = (100 - newCodeHeight) + '%';
+            horizontalDivider.style.top = newCodeHeight + '%';
+        }
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isDragging) {
+        isDragging = false;
+        verticalDivider.classList.remove('active');
+        horizontalDivider.classList.remove('active');
+        currentDivider = null;
+    }
+});
+
 clearOutputBtn.addEventListener('click', () => {
     outputDisplay.innerHTML = '';
     drawingTools.style.display = 'none';
@@ -993,13 +1114,19 @@ toggleCodeBtn.addEventListener('click', () => {
 
     if (codeVisible) {
         codeEditorSection.style.display = 'flex';
+        codeEditorSection.style.height = '50%';
         outputSection.style.height = '50%';
         toggleCodeBtn.textContent = 'Hide Code';
         updateUndoRedoButtons();
+        if (customizeMode) {
+            horizontalDivider.style.display = 'block';
+            horizontalDivider.style.top = '50%';
+        }
     } else {
         codeEditorSection.style.display = 'none';
         outputSection.style.height = '100%';
         toggleCodeBtn.textContent = 'Show Code';
+        horizontalDivider.style.display = 'none';
         if (autoRunEnabled && currentCode && currentCode !== 'Your code will be here')
             runCode(currentCode);
     }
