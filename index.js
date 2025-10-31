@@ -3,7 +3,7 @@
 // MARTZ CEDRIC
 // 2025
 
-const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain website, true for local testing with an index.html
+const PUTER_AVAILABLE = false;  // must be false when running on ancientbrain website, true for local testing with an index.html
 
 (function() {
     const tailwindScript = document.createElement('script');
@@ -453,10 +453,8 @@ if (typeof PUTER_AVAILABLE !== 'undefined' && PUTER_AVAILABLE) {
             }
         }, 50);
     }
-} else {
-    // Ensure UI state reflects Puter not available
+} else
     console.log('Puter polling skipped because PUTER_AVAILABLE=false');
-}
 
 const apiKeyInput = document.getElementById('api-key-input');
 const setApiKeyBtn = document.getElementById('set-api-key-btn');
