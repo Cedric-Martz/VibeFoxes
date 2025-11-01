@@ -378,6 +378,10 @@ Examples:
                             class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Copy
                     </button>
+                    <button id="download-code-btn" disabled
+                            class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                        Download Code
+                    </button>
                     <button id="undo-btn" disabled
                             class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
                         Undo
@@ -438,6 +442,7 @@ let discussionMode = false;
 let customizeMode = false;
 let isDragging = false;
 let currentDivider = null;
+let lastSecurityReport = null;
 
 const initPuter = () => {
     if (typeof PUTER_AVAILABLE !== 'undefined' && !PUTER_AVAILABLE) {
@@ -489,6 +494,7 @@ const analyzeSecurityBtn = document.getElementById('analyze-security-btn');
 const codeContent = document.getElementById('code-content');
 const runCodeBtn = document.getElementById('run-code-btn');
 const copyCodeBtn = document.getElementById('copy-code-btn');
+const downloadCodeBtn = document.getElementById('download-code-btn');
 const undoBtn = document.getElementById('undo-btn');
 const redoBtn = document.getElementById('redo-btn');
 const toggleCodeBtn = document.getElementById('toggle-code-btn');
@@ -972,6 +978,7 @@ function updateCode(newCode) {
     updateUndoRedoButtons();
     runCodeBtn.disabled = false;
     copyCodeBtn.disabled = false;
+    downloadCodeBtn.disabled = false;
     analyzeSecurityBtn.disabled = false;
 }
 
@@ -1009,7 +1016,7 @@ function addMessageToConversation(role, content, isFormatted = false) {
             .replace(/\n/g, '<br>');
         text.innerHTML = formattedContent;
     } else
-        text.textContent = content; // and if not already formatted, just put it raw
+        text.textContent = content; // and if not already formatted, just put it raw. Like the ham... Sorry, bad joke :-(
 
     messageDiv.appendChild(label);
     messageDiv.appendChild(text);
@@ -1056,6 +1063,39 @@ copyCodeBtn.addEventListener('click', () => {
     });
 });
 
+downloadCodeBtn.addEventListener('click', () => {
+    if (!currentCode)
+        return;
+
+    let extension = '.js';
+    let filename = 'generated-code';
+
+    if (currentCode.includes('<!DOCTYPE') || currentCode.includes('<html')) {
+        extension = '.html';
+        filename = 'generated-page';
+    } else if (currentCode.includes('function') || currentCode.includes('const') || currentCode.includes('let')) {
+        extension = '.js';
+        filename = 'generated-code';
+    }
+
+    const blob = new Blob([currentCode], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = filename + extension;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    const originalText = downloadCodeBtn.textContent;
+    downloadCodeBtn.textContent = 'Downloaded!';
+    setTimeout(() => {
+        downloadCodeBtn.textContent = originalText;
+    }, 2000);
+});
+
 undoBtn.addEventListener('click', () => {
     if (historyIndex > 0) {
         historyIndex--;
@@ -1090,11 +1130,13 @@ resetChatBtn.addEventListener('click', () => {
     currentCode = '';
     codeHistory = [];
     historyIndex = -1;
+    lastSecurityReport = null;
     codeContent.textContent = 'Your code will be here';
     outputDisplay.innerHTML = '';
     drawingTools.style.display = 'none';
     runCodeBtn.disabled = true;
     copyCodeBtn.disabled = true;
+    downloadCodeBtn.disabled = true;
     analyzeSecurityBtn.disabled = true;
     updateUndoRedoButtons();
 });
@@ -1267,7 +1309,35 @@ Provide a comprehensive security report with specific line numbers for each issu
             aiResponse = data.choices[0].message.content;
         }
 
+        lastSecurityReport = aiResponse;
         addMessageToConversation('assistant', `**Security Analysis Report**\n\n${aiResponse}`, true);
+        setTimeout(() => {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'mt-3 p-3 bg-editor-input rounded-lg border-2 border-fox-orange animate-slide-in';
+            buttonContainer.innerHTML = `
+                <button id="download-security-report-btn"
+                        class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors font-bold">
+                    Download Security Report
+                </button>
+                <span class="ml-3 text-sm text-fox-cream">Click to download the complete audit</span>
+            `;
+            const lastMessage = conversationDiv.lastElementChild;
+
+            if (lastMessage) {
+                lastMessage.appendChild(buttonContainer);
+                const downloadReportBtn = document.getElementById('download-security-report-btn');
+                if (downloadReportBtn) {
+                    downloadReportBtn.addEventListener('click', () => {
+                        downloadSecurityReport();
+                        const originalText = downloadReportBtn.innerHTML;
+                        downloadReportBtn.innerHTML = 'Downloaded!';
+                        setTimeout(() => {
+                            downloadReportBtn.innerHTML = originalText;
+                        }, 2000);
+                    });
+                }
+            }
+        }, 100);
 
         const vulnerabilities = extractVulnerabilities(aiResponse);
         if (vulnerabilities.length > 0) {
@@ -1295,6 +1365,34 @@ Provide a comprehensive security report with specific line numbers for each issu
         analyzeSecurityBtn.textContent = 'Audit Code Security';
     }
 });
+
+function downloadSecurityReport() {
+    if (!lastSecurityReport) {
+        console.warn('No security report available to download');
+        return;
+    }
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const reportContent = `VibeFoxes Security Analysis Report
+Generated: ${new Date().toLocaleString()}
+================================================================================
+
+${lastSecurityReport}
+
+================================================================================
+Generated by VibeFoxes - A Vibe Coding Experience
+`;
+
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `security-report-${timestamp}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
 
 function extractVulnerabilities(securityReport) {
     const vulnerabilities = [];
@@ -1335,10 +1433,10 @@ function addSecurityComments(code, vulnerabilities) {
         annotatedLines.push(line);
         vulns.forEach(vuln => {
             const severityEmoji = {
-                'Critical': '🔴', // I hates these emojis nowadays... But that's AI mark, so I put it
-                'High': '🟠',
-                'Medium': '🟡',
-                'Low': '🟢'
+                'Critical': '🦁', // I felt creatives with the emojis... Hope you like them :/
+                'High': '🐺',
+                'Medium': '🐱',
+                'Low': '🐤'
             }[vuln.severity] || '⚠️';
             const comment = `// ${severityEmoji} SECURITY: ${vuln.cwe} - ${vuln.severity} - ${vuln.description}`;
             annotatedLines.push(comment);
