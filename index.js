@@ -3,7 +3,7 @@
 // MARTZ CEDRIC
 // 2025
 
-const PUTER_AVAILABLE = false;  // must be false when running on ancientbrain website, true for local testing with an index.html
+const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain website, true for local testing with an index.html
 
 (function() {
     const tailwindScript = document.createElement('script');
@@ -213,14 +213,21 @@ document.write(`
             </div>
 
             <div id="welcome-api-section">
-                <label class="block text-fox-cream font-semibold mb-2 text-sm">OpenAI API Key:</label>
-                <input type="password" id="welcome-api-input"
-                       placeholder="sk-..."
-                       class="w-full px-4 py-3 bg-editor-input border-2 border-editor-border text-editor-text rounded-lg focus:outline-none focus:border-fox-orange transition-colors">
-                <a href="https://platform.openai.com/api-keys" target="_blank"
-                   class="text-fox-orange text-sm hover:text-fox-orange-hover mt-1 inline-block">
-                    Need an API key? Click here :-)
-                </a>
+                <form id="welcome-api-form" onsubmit="return false;" class="w-full">
+                    <label for="welcome-api-username" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;">API Key Username (optional)</label>
+                    <input type="text" id="welcome-api-username" autocomplete="username" placeholder="Optional username"
+                           style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;">
+                    <label class="block text-fox-cream font-semibold mb-2 text-sm">OpenAI API Key:</label>
+                    <input type="password" id="welcome-api-input" autocomplete="new-password"
+                           placeholder="sk-..."
+                           class="w-full px-4 py-3 bg-editor-input border-2 border-editor-border text-editor-text rounded-lg focus:outline-none focus:border-fox-orange transition-colors mb-2">
+                    <div>
+                        <a href="https://platform.openai.com/api-keys" target="_blank"
+                           class="text-fox-orange text-sm hover:text-fox-orange-hover mt-1 inline-block">
+                            Need an API key? Click here :-)
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -275,12 +282,18 @@ document.write(`
             VibeFoxes - A Vibe Coding Experience
         </h1>
         <div id="api-key-section" class="flex gap-2.5 items-center flex-wrap">
-            <input type="password" id="api-key-input" placeholder="Enter your OpenAI API Key..."
-                   class="flex-1 max-w-md px-3 py-2 bg-editor-input border border-editor-border text-editor-text rounded focus:outline-none focus:ring-2 focus:ring-fox-orange">
-            <button id="set-api-key-btn" disabled
-                    class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
-                Set API Key
-            </button>
+            <form id="api-key-form" onsubmit="return false;" class="flex gap-2.5 items-center">
+                <label for="api-username-input" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;">API Key Username (optional)</label>
+                <input type="text" id="api-username-input" autocomplete="username" placeholder="Optional username"
+                       style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;">
+                <input type="password" id="api-key-input" autocomplete="new-password" placeholder="Enter your OpenAI API Key..."
+                       class="flex-1 max-w-md px-3 py-2 bg-editor-input border border-editor-border text-editor-text rounded focus:outline-none focus:ring-2 focus:ring-fox-orange">
+                <button id="set-api-key-btn" type="button" disabled
+                        class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors">
+                    Set API Key
+                </button>
+            </form>
+
             <span id="api-status" class="text-sm"></span>
             <div class="flex gap-2 items-center ml-4">
                 <label for="model-selector" class="text-editor-text text-sm font-semibold">Model:</label>
@@ -296,20 +309,24 @@ document.write(`
                 </select>
             </div>
             <button id="reset-chat-btn"
-                    class="px-4 py-2 bg-red-600 text-white rounded cursor-pointer text-sm hover:bg-red-700 transition-colors">
+                    class="px-4 py-2 bg-fox-orange-dark text-white rounded cursor-pointer text-sm hover:bg-fox-orange transition-colors">
                 Reset Chat
             </button>
             <button id="autorun-toggle-btn"
-                    class="px-4 py-2 bg-green-600 text-white rounded cursor-pointer text-sm hover:bg-green-700 transition-colors">
+                    class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
                 Auto-run: ON
             </button>
             <button id="discussion-mode-btn"
-                    class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer text-sm hover:bg-blue-700 transition-colors">
+                    class="px-4 py-2 bg-fox-brown text-white rounded cursor-pointer text-sm hover:bg-fox-orange-dark transition-colors">
                 Discussion: OFF
             </button>
             <button id="customize-mode-btn"
-                    class="px-4 py-2 bg-yellow-600 text-white rounded cursor-pointer text-sm hover:bg-yellow-700 transition-colors">
-                Customize: OFF
+                    class="px-4 py-2 bg-fox-orange text-white rounded cursor-pointer text-sm hover:bg-fox-orange-hover transition-colors">
+                Customize Layout
+            </button>
+            <button id="analyze-security-btn" disabled
+                    class="px-4 py-2 bg-fox-orange-dark text-white rounded cursor-pointer text-sm hover:bg-fox-orange transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed">
+                Audit Code Security
             </button>
         </div>
     </div>
@@ -378,7 +395,7 @@ Examples:
                 <div id="output-toolbar" class="px-4 py-2.5 bg-editor-toolbar border-b border-editor-border flex gap-2.5 items-center">
                     <strong class="text-editor-text">Output:</strong>
                     <button id="toggle-code-btn"
-                            class="px-4 py-2 bg-purple-600 text-white rounded cursor-pointer text-sm hover:bg-purple-700 transition-colors">
+                            class="px-4 py-2 bg-fox-orange-dark text-white rounded cursor-pointer text-sm hover:bg-fox-orange transition-colors">
                         Show Code
                     </button>
                     <button id="clear-output-btn"
@@ -468,6 +485,7 @@ const resetChatBtn = document.getElementById('reset-chat-btn');
 const autorunToggleBtn = document.getElementById('autorun-toggle-btn');
 const discussionModeBtn = document.getElementById('discussion-mode-btn');
 const customizeModeBtn = document.getElementById('customize-mode-btn');
+const analyzeSecurityBtn = document.getElementById('analyze-security-btn');
 const codeContent = document.getElementById('code-content');
 const runCodeBtn = document.getElementById('run-code-btn');
 const copyCodeBtn = document.getElementById('copy-code-btn');
@@ -881,7 +899,7 @@ async function sendPromptToAI() {
 function buildConversationContext() {
     const systemMessage = {
         role: 'system',
-        content: discussionMode 
+        content: discussionMode
             ? `You are a friendly AI assistant. Have natural conversations with the user. Answer questions, discuss topics, and be helpful. DO NOT generate code unless explicitly asked. Just chat naturally.`
             : `You are a coding assistant for a vibe coding app. Generate executable JavaScript code based on user descriptions.
 
@@ -954,9 +972,10 @@ function updateCode(newCode) {
     updateUndoRedoButtons();
     runCodeBtn.disabled = false;
     copyCodeBtn.disabled = false;
+    analyzeSecurityBtn.disabled = false;
 }
 
-function addMessageToConversation(role, content) {
+function addMessageToConversation(role, content, isFormatted = false) {
     conversationHistory.push({ role, content });
     const messageDiv = document.createElement('div');
     messageDiv.className = 'animate-slide-in';
@@ -969,7 +988,29 @@ function addMessageToConversation(role, content) {
     label.className = 'font-bold mb-1 text-xs opacity-80';
     label.textContent = role === 'user' ? 'You:' : 'AI Assistant:';
     const text = document.createElement('div');
-    text.textContent = content;
+
+    // If the user asked a Security Audit,, we already have a formatted response, so we just write it as HTML
+    if (isFormatted) {
+        text.className = 'whitespace-pre-wrap break-words';
+        let formattedContent = content
+            .replace(/### \*\*(.*?)\*\*/g, '<h4 class="font-bold text-fox-orange mt-3 mb-2">$1</h4>')
+            .replace(/#### (.*?)$/gm, '<h5 class="font-bold text-fox-orange-hover mt-2 mb-1">$1</h5>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-fox-orange">$1</strong>')
+            .replace(/\n\|(.+)\|\n\|[-: |]+\|\n((?:\|.+\|\n?)+)/g, (match, header, rows) => {
+                const headers = header.split('|').filter(h => h.trim()).map(h => `<th class="border border-editor-border px-2 py-1 bg-editor-toolbar">${h.trim()}</th>`).join('');
+                const rowsHtml = rows.trim().split('\n').map(row => {
+                    const cells = row.split('|').filter(c => c.trim()).map(c => `<td class="border border-editor-border px-2 py-1">${c.trim()}</td>`).join('');
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+                return `<table class="border-collapse border border-editor-border my-3 w-full"><thead><tr>${headers}</tr></thead><tbody>${rowsHtml}</tbody></table>`;
+            })
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre class="bg-editor-input p-2 rounded my-2 overflow-x-auto"><code>$2</code></pre>')
+            .replace(/`([^`]+)`/g, '<code class="bg-editor-input px-1 rounded text-fox-orange">$1</code>')
+            .replace(/\n/g, '<br>');
+        text.innerHTML = formattedContent;
+    } else
+        text.textContent = content; // and if not already formatted, just put it raw
+
     messageDiv.appendChild(label);
     messageDiv.appendChild(text);
     conversationDiv.appendChild(messageDiv);
@@ -1054,6 +1095,7 @@ resetChatBtn.addEventListener('click', () => {
     drawingTools.style.display = 'none';
     runCodeBtn.disabled = true;
     copyCodeBtn.disabled = true;
+    analyzeSecurityBtn.disabled = true;
     updateUndoRedoButtons();
 });
 
@@ -1061,16 +1103,16 @@ autorunToggleBtn.addEventListener('click', () => {
     autoRunEnabled = !autoRunEnabled;
     if (autoRunEnabled) {
         autorunToggleBtn.textContent = 'Auto-run: ON';
-        autorunToggleBtn.classList.remove('bg-gray-600');
-        autorunToggleBtn.classList.add('bg-green-600');
-        autorunToggleBtn.classList.remove('hover:bg-gray-700');
-        autorunToggleBtn.classList.add('hover:bg-green-700');
+        autorunToggleBtn.classList.remove('bg-fox-brown');
+        autorunToggleBtn.classList.add('bg-fox-orange');
+        autorunToggleBtn.classList.remove('hover:bg-fox-orange-dark');
+        autorunToggleBtn.classList.add('hover:bg-fox-orange-hover');
     } else {
         autorunToggleBtn.textContent = 'Auto-run: OFF';
-        autorunToggleBtn.classList.remove('bg-green-600');
-        autorunToggleBtn.classList.add('bg-gray-600');
-        autorunToggleBtn.classList.remove('hover:bg-green-700');
-        autorunToggleBtn.classList.add('hover:bg-gray-700');
+        autorunToggleBtn.classList.remove('bg-fox-orange');
+        autorunToggleBtn.classList.add('bg-fox-brown');
+        autorunToggleBtn.classList.remove('hover:bg-fox-orange-hover');
+        autorunToggleBtn.classList.add('hover:bg-fox-orange-dark');
     }
 });
 
@@ -1078,42 +1120,232 @@ discussionModeBtn.addEventListener('click', () => {
     discussionMode = !discussionMode;
     if (discussionMode) {
         discussionModeBtn.textContent = 'Discussion: ON';
-        discussionModeBtn.classList.remove('bg-blue-600');
-        discussionModeBtn.classList.add('bg-purple-600');
-        discussionModeBtn.classList.remove('hover:bg-blue-700');
-        discussionModeBtn.classList.add('hover:bg-purple-700');
+        discussionModeBtn.classList.remove('bg-fox-brown');
+        discussionModeBtn.classList.add('bg-fox-orange');
+        discussionModeBtn.classList.remove('hover:bg-fox-orange-dark');
+        discussionModeBtn.classList.add('hover:bg-fox-orange-hover');
     } else {
         discussionModeBtn.textContent = 'Discussion: OFF';
-        discussionModeBtn.classList.remove('bg-purple-600');
-        discussionModeBtn.classList.add('bg-blue-600');
-        discussionModeBtn.classList.remove('hover:bg-purple-700');
-        discussionModeBtn.classList.add('hover:bg-blue-700');
+        discussionModeBtn.classList.remove('bg-fox-orange');
+        discussionModeBtn.classList.add('bg-fox-brown');
+        discussionModeBtn.classList.remove('hover:bg-fox-orange-hover');
+        discussionModeBtn.classList.add('hover:bg-fox-orange-dark');
     }
 });
 
 customizeModeBtn.addEventListener('click', () => {
     customizeMode = !customizeMode;
     if (customizeMode) {
-        customizeModeBtn.textContent = 'Customize: ON';
-        customizeModeBtn.classList.remove('bg-yellow-600');
-        customizeModeBtn.classList.add('bg-orange-600');
-        customizeModeBtn.classList.remove('hover:bg-yellow-700');
-        customizeModeBtn.classList.add('hover:bg-orange-700');
+        customizeModeBtn.textContent = 'Layout: Custom';
+        customizeModeBtn.classList.remove('bg-fox-orange-dark');
+        customizeModeBtn.classList.add('bg-fox-orange');
+        customizeModeBtn.classList.remove('hover:bg-fox-orange');
+        customizeModeBtn.classList.add('hover:bg-fox-orange-hover');
         verticalDivider.style.display = 'block';
         if (codeEditorSection.style.display !== 'none')
             horizontalDivider.style.display = 'block';
         mainContent.classList.add('customize-mode');
+        addMessageToConversation('assistant', 'Layout Customization Enabled\n\nYou can drag the vertical divider to resize the chat/output panels\n- Click again to lock the layout when you are finished');
     } else {
-        customizeModeBtn.textContent = 'Customize: OFF';
-        customizeModeBtn.classList.remove('bg-orange-600');
-        customizeModeBtn.classList.add('bg-yellow-600');
-        customizeModeBtn.classList.remove('hover:bg-orange-700');
-        customizeModeBtn.classList.add('hover:bg-yellow-700');
+        customizeModeBtn.textContent = 'Layout: Fixed';
+        customizeModeBtn.classList.remove('bg-fox-orange');
+        customizeModeBtn.classList.add('bg-fox-orange-dark');
+        customizeModeBtn.classList.remove('hover:bg-fox-orange-hover');
+        customizeModeBtn.classList.add('hover:bg-fox-orange');
         verticalDivider.style.display = 'none';
         horizontalDivider.style.display = 'none';
         mainContent.classList.remove('customize-mode');
     }
 });
+
+analyzeSecurityBtn.addEventListener('click', async () => {
+    if (!currentCode) {
+        addMessageToConversation('assistant', 'No code to analyze. Please generate some code first.');
+        return;
+    }
+
+    const usePuter = selectedModel === 'puter' && (typeof PUTER_AVAILABLE === 'undefined' || PUTER_AVAILABLE);
+    if (!usePuter && !apiKey) {
+        addMessageToConversation('assistant', 'Please set your OpenAI API key to use security analysis.');
+        return;
+    }
+    if (usePuter && !puterReady) {
+        addMessageToConversation('assistant', 'Puter is still loading. Please wait a moment and try again.');
+        return;
+    }
+
+    analyzeSecurityBtn.disabled = true;
+    analyzeSecurityBtn.textContent = 'Analyzing...';
+    addMessageToConversation('user', '[Security Analysis Request]');
+    showLoadingModal();
+
+    const codeLines = currentCode.split('\n');
+    const numberedCode = codeLines.map((line, idx) => `${idx + 1}: ${line}`).join('\n');
+    const securityPrompt = `Analyze the following code for security vulnerabilities, including Common Weakness Enumeration (CWE) and Common Vulnerabilities and Exposures (CVE) patterns.
+
+Provide a detailed security audit covering:
+1. **CWE Patterns**: Identify any common weakness patterns (e.g., CWE-79 XSS, CWE-89 SQL Injection, CWE-22 Path Traversal, CWE-352 CSRF, CWE-798 Hardcoded Credentials, etc.)
+2. **CVE-like Vulnerabilities**: Check for patterns similar to known CVEs
+3. **Input Validation Issues**: Unvalidated user inputs, missing sanitization
+4. **Authentication & Authorization Flaws**: Weak authentication, missing access controls
+5. **Data Exposure**: Sensitive data handling, logging issues
+6. **Code Injection Risks**: eval(), innerHTML, document.write() usage
+7. **Cryptography Issues**: Weak encryption, hardcoded secrets
+8. **Configuration Problems**: Insecure defaults, missing security headers
+
+For each issue found, provide IN THIS EXACT FORMAT:
+- **Severity**: Critical/High/Medium/Low
+- **CWE ID**: CWE-XXX (if applicable) or CVE-XXXX-XXXXX
+- **Line**: Exact line number where the issue exists
+- **Description**: What the vulnerability is
+- **Exploitation**: How it could be exploited
+- **Remediation**: How to fix it
+
+IMPORTANT: For each vulnerability, you MUST include the exact line number where it appears.
+
+Code to analyze (with line numbers):
+\`\`\`javascript
+${numberedCode}
+\`\`\`
+
+Provide a comprehensive security report with specific line numbers for each issue.`;
+
+    try {
+        let aiResponse = '';
+
+        if (usePuter) {
+            if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
+                throw new Error('Puter library not loaded or puter.ai.chat not available.');
+
+            const puterResult = await puter.ai.chat(securityPrompt);
+
+            if (typeof puterResult === 'string') {
+                aiResponse = puterResult;
+            } else if (puterResult && puterResult.message) {
+                if (typeof puterResult.message === 'string') {
+                    aiResponse = puterResult.message;
+                } else if (puterResult.message.content) {
+                    aiResponse = puterResult.message.content;
+                }
+            } else if (puterResult && puterResult.response) {
+                aiResponse = puterResult.response;
+            } else if (puterResult && puterResult.text) {
+                aiResponse = puterResult.text;
+            } else if (puterResult && puterResult.content) {
+                aiResponse = puterResult.content;
+            } else {
+                aiResponse = JSON.stringify(puterResult, null, 2);
+            }
+        } else {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: selectedModel,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'You are a cybersecurity expert specializing in code security analysis, CWE patterns, and CVE vulnerabilities. Provide thorough, actionable security audits with specific line numbers for each vulnerability found.'
+                        },
+                        {
+                            role: 'user',
+                            content: securityPrompt
+                        }
+                    ],
+                    temperature: 0.3,
+                    max_tokens: 3000
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error)
+                throw new Error(data.error.message);
+            aiResponse = data.choices[0].message.content;
+        }
+
+        addMessageToConversation('assistant', `**Security Analysis Report**\n\n${aiResponse}`, true);
+
+        const vulnerabilities = extractVulnerabilities(aiResponse);
+        if (vulnerabilities.length > 0) {
+            const annotatedCode = addSecurityComments(currentCode, vulnerabilities);
+            updateCode(annotatedCode);
+            if (!codeVisible) { // code was invisible sometimes
+                codeVisible = true;
+                codeEditorSection.style.display = 'flex';
+                codeEditorSection.style.height = '50%';
+                outputSection.style.height = '50%';
+                toggleCodeBtn.textContent = 'Hide Code';
+                if (customizeMode) {
+                    horizontalDivider.style.display = 'block';
+                    horizontalDivider.style.top = '50%';
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error('Security analysis error:', error);
+        addMessageToConversation('assistant', `Error during security analysis: ${error.message}`);
+    } finally {
+        hideLoadingModal();
+        analyzeSecurityBtn.disabled = false;
+        analyzeSecurityBtn.textContent = 'Audit Code Security';
+    }
+});
+
+function extractVulnerabilities(securityReport) {
+    const vulnerabilities = [];
+    const linePattern = /\*\*Line\*\*:?\s*(\d+)/gi;
+    const cwePattern = /\*\*CWE ID\*\*:?\s*(CWE-\d+|CVE-\d{4}-\d+)/gi;
+    const severityPattern = /\*\*Severity\*\*:?\s*(Critical|High|Medium|Low)/gi;
+    const descriptionPattern = /\*\*Description\*\*:?\s*([^\n]+)/gi;
+    const sections = securityReport.split(/(?=\*\*Severity\*\*)/g);
+    sections.forEach(section => {
+        const lineMatch = linePattern.exec(section);
+        const cweMatch = cwePattern.exec(section);
+        const severityMatch = severityPattern.exec(section);
+        const descMatch = descriptionPattern.exec(section);
+
+        if (lineMatch) {
+            vulnerabilities.push({
+                line: parseInt(lineMatch[1]),
+                cwe: cweMatch ? cweMatch[1] : 'Unknown',
+                severity: severityMatch ? severityMatch[1] : 'Unknown',
+                description: descMatch ? descMatch[1].trim() : 'Security issue detected'
+            });
+        }
+        linePattern.lastIndex = 0;
+        cwePattern.lastIndex = 0;
+        severityPattern.lastIndex = 0;
+        descriptionPattern.lastIndex = 0;
+    });
+    return vulnerabilities;
+}
+
+function addSecurityComments(code, vulnerabilities) {
+    const lines = code.split('\n');
+    const annotatedLines = [];
+    lines.forEach((line, index) => {
+        const lineNumber = index + 1;
+        const vulns = vulnerabilities.filter(v => v.line === lineNumber);
+
+        annotatedLines.push(line);
+        vulns.forEach(vuln => {
+            const severityEmoji = {
+                'Critical': '🔴', // I hates these emojis nowadays... But that's AI mark, so I put it
+                'High': '🟠',
+                'Medium': '🟡',
+                'Low': '🟢'
+            }[vuln.severity] || '⚠️';
+            const comment = `// ${severityEmoji} SECURITY: ${vuln.cwe} - ${vuln.severity} - ${vuln.description}`;
+            annotatedLines.push(comment);
+        });
+    });
+    return annotatedLines.join('\n');
+}
 
 verticalDivider.addEventListener('mousedown', (clickElement) => {
     if (!customizeMode) return;
@@ -1264,5 +1496,4 @@ sendToAiBtn.addEventListener('click', () => {
     }
 });
 
-console.log('Vibe Coding App initialized!');
 console.log('Puter.ai status:', puterReady ? 'Ready' : 'Loading...');
