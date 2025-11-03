@@ -21,7 +21,7 @@ Because the devs were inspired by Halloween but didn't want to use pumpkins... a
 - **localStorage Integration**: Saves API keys and model preferences
 - **Auto-run Code**: Automatically executes generated HTML/JavaScript
 - **Conversation History**: Keeps track of your interactions
-- ⏮**Undo/Redo**: Navigate through code history
+- **Undo/Redo**: Navigate through code history
 - **Drawing Canvas**: Interactive drawing tools
 - **Welcome Screen**: Easy setup for first-time users
 
