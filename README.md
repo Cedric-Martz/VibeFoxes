@@ -64,7 +64,7 @@ ai_assignment/
 └── .gitignore
 ```
 
-## 🔧 CI/CD Pipeline
+## CI/CD Pipeline
 
 The project includes a comprehensive CI/CD pipeline that runs on every push and pull request:
 
