@@ -4,12 +4,11 @@
   "description": "VibeFoxes - AI-powered code generator with a fox-inspired theme. By Jules François & Martz Cedric.",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build:css && npx http-server -p 8080 -o",
-    "build:css": "npx tailwindcss -i ./styles.css -o ./dist/styles.css",
-    "watch:css": "npx tailwindcss -i ./styles.css -o ./dist/styles.css --watch",
+    "start": "npx http-server -p 8080 -o",
     "test": "node --check index.js",
-    "lint": "eslint index.js",
-    "lint:fix": "eslint index.js --fix",
+    "test:full": "node --check index.js && node --check server.js",
+    "lint": "eslint index.js server.js",
+    "lint:fix": "eslint index.js server.js --fix",
     "check": "npm run test && npm run lint",
     "audit": "npm audit"
   },
@@ -32,11 +31,7 @@
   },
   "private": true,
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.17",
-    "autoprefixer": "^10.4.21",
     "eslint": "^8.56.0",
-    "http-server": "^14.1.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.17"
+    "http-server": "^14.1.1"
   }
 }

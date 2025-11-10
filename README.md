@@ -35,38 +35,16 @@ git clone https://github.com/Cedric-Martz/ai_assignment.git
 cd ai_assignment
 ```
 
-2. Open `index.html` in your browser
+2. Start project
 ```bash
-open index.html
-xdg-open index.html
-start index.html
+npm start
 ```
 
 3. Enter your OpenAI API key (or use Puter.ai for testing)
 
-### Configuration
-
-- **Local Testing**: Set `PUTER_AVAILABLE = true` in `index.js`
-- **Ancient Brain**: Set `PUTER_AVAILABLE = false` in `server.js`
-
-## Files Structure
-
-```
-ai_assignment/
-├── index.js
-├── server.js
-├── index.html
-├── package.json
-├── .github/
-│   └── workflows/
-│       └── ci.yml
-├── .eslintrc.json
-└── .gitignore
-```
-
 ## CI/CD Pipeline
 
-The project includes a comprehensive CI/CD pipeline that runs on every push and pull request:
+The project includes CI/CD:
 
 ### Pipeline Jobs
 
@@ -130,17 +108,13 @@ No API key needed. See documentation: https://developer.puter.com/
 
 - `eval()` usage in code execution (security consideration)
 - Puter.ai may fail moderation for certain prompts
-- Ancient Brain domain restrictions with Puter.ai
 
 ## License
 
-Educational project for DCU Advanced Algorithms & AI Search course.
+See LICENSE file for more information.
 
 ## Acknowledgments
 
 - OpenAI for GPT models
 - Puter.ai for free AI testing
-- Ancient Brain platform
 - Tailwind CSS for styling
-
-Made with 🦊 by Jules & Cedric
