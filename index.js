@@ -5,38 +5,7 @@
 
 const PUTER_AVAILABLE = true;  // must be false when running on ancientbrain website, true for local testing with an index.html
 
-(function() {
-    const tailwindScript = document.createElement('script');
-    tailwindScript.src = 'https://cdn.tailwindcss.com';
-    tailwindScript.async = true;
-    document.head.appendChild(tailwindScript);
-
-    tailwindScript.onload = () => {
-        if (window.tailwind && window.tailwind.config)
-            window.tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            'editor-bg': '#1a1410',
-                            'editor-panel': '#2a1f1a',
-                            'editor-toolbar': '#3a2820',
-                            'editor-input': '#4a3528',
-                            'editor-border': '#5a4030',
-                            'editor-text': '#f5e6d3',
-                            'editor-accent': '#ff6b35',
-                            'fox-orange': '#ff6b35',
-                            'fox-orange-dark': '#d95d39',
-                            'fox-orange-hover': '#ff8555',
-                            'fox-cream': '#f5e6d3',
-                            'fox-brown': '#6b4423',
-                            'fox-dark': '#1a1410',
-                            'editor-message-user': '#4a3528',
-                        }
-                    }
-                }
-            };
-    };
-})();
+// Tailwind CSS is now loaded via dist/styles.css (compiled, production-ready)
 
 (function() {
     const jqueryScript = document.createElement('script');
@@ -435,7 +404,6 @@ let historyIndex = -1;
 let isDrawing = false;
 let canvas = null;
 let ctx = null;
-let lastImageData = null;
 let puterReady = false;
 let autoRunEnabled = true;
 let discussionMode = false;
@@ -999,7 +967,7 @@ function addMessageToConversation(role, content, isFormatted = false) {
     // If the user asked a Security Audit,, we already have a formatted response, so we just write it as HTML
     if (isFormatted) {
         text.className = 'whitespace-pre-wrap break-words';
-        let formattedContent = content
+        const formattedContent = content
             .replace(/### \*\*(.*?)\*\*/g, '<h4 class="font-bold text-fox-orange mt-3 mb-2">$1</h4>')
             .replace(/#### (.*?)$/gm, '<h5 class="font-bold text-fox-orange-hover mt-2 mb-1">$1</h5>')
             .replace(/\*\*(.*?)\*\*/g, '<strong class="text-fox-orange">$1</strong>')
@@ -1540,7 +1508,6 @@ function setupCanvas(img) {
 
     ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
-    lastImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     drawingTools.style.display = 'flex';
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
