@@ -42,45 +42,6 @@ npm start
 
 3. Enter your OpenAI API key (or use Puter.ai for testing)
 
-## CI/CD Pipeline
-
-The project includes CI/CD:
-
-### Pipeline Jobs
-
-1. **Lint and Validate**
-   - Checks JavaScript syntax
-   - Runs ESLint for code quality
-   - Validates file sizes
-
-2. **Security Audit**
-   - Runs npm audit
-   - Checks for hardcoded API keys
-   - Security vulnerability scanning
-
-3. **Test Compatibility**
-   - Checks ES6+ compatibility
-   - Detects security risks (eval usage)
-
-4. **Build Information**
-   - Displays project statistics
-   - Verifies API integrations
-   - Checks configuration
-
-5. **Deployment Ready**
-   - Verifies all required files
-   - Final readiness check
-
-### Running CI/CD Locally
-
-```bash
-npm install
-node --check index.js
-node --check server.js
-npx eslint index.js server.js
-npm audit
-```
-
 ## API Keys
 
 ### OpenAI
@@ -91,10 +52,8 @@ No API key needed. See documentation: https://developer.puter.com/
 
 ## Security Notes
 
-- **Never commit API keys** to the repository
+- **Never commit API keys** here
 - API keys are stored in `localStorage` (browser-side only)
-- The `.gitignore` file prevents accidental key commits
-- CI/CD pipeline checks for hardcoded secrets
 
 ## Theme Colors
 
@@ -108,10 +67,15 @@ No API key needed. See documentation: https://developer.puter.com/
 
 - `eval()` usage in code execution (security consideration)
 - Puter.ai may fail moderation for certain prompts
+- Sometimes, Puter.ai returns 404. If it happens, please refresh the page and try again.
 
 ## License
 
 See LICENSE file for more information.
+
+## Contribution
+
+If you want to create a pull request with changes to the project, feel free to do so. We will review the pending changes ASAP.
 
 ## Acknowledgments
 
