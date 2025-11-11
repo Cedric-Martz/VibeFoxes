@@ -71,7 +71,7 @@ No API key needed. See documentation: https://developer.puter.com/
 
 ## License
 
-See LICENSE file for more information.
+See ![LICENSE](./LICENSE) file for more information.
 
 ## Contribution
 
