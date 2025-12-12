@@ -208,7 +208,7 @@ document.write(`
                     <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
                     <option value="gpt-4o">GPT-4o</option>
                     <option value="gpt-4o-mini">GPT-4o Mini</option>
-                    <option value="puter">Puter.ai</option>
+                    <option value="puter">Puter.ai (login page opens in a new tab for you)</option>
                 </select>
             </div>
 
@@ -305,7 +305,7 @@ document.write(`
                     <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
                     <option value="gpt-4o">GPT-4o</option>
                     <option value="gpt-4o-mini">GPT-4o Mini</option>
-                    <option value="puter">Puter.ai (testing)</option>
+                    <option value="puter">Puter.ai</option>
                 </select>
             </div>
             <button id="reset-chat-btn"
@@ -443,6 +443,21 @@ let customizeMode = false;
 let isDragging = false;
 let currentDivider = null;
 let lastSecurityReport = null;
+let puterAuthenticated = false;
+
+const ensurePuterAuth = async () => {
+    if (puterAuthenticated)
+        return true;
+    try {
+        await puter.auth.signIn();
+        puterAuthenticated = true;
+        console.log('Puter.js authenticated successfully.');
+        return true;
+    } catch (authError) {
+        console.warn('Puter auth failed:', authError);
+        return false;
+    }
+};
 
 const initPuter = () => {
     if (typeof PUTER_AVAILABLE !== 'undefined' && !PUTER_AVAILABLE) {
@@ -452,7 +467,7 @@ const initPuter = () => {
 
     if (typeof puter !== 'undefined') {
         puterReady = true;
-        console.log('Puter.js loaded and ready (FOR TESTS ONLY, PUTER IS NOT SUPPORTED ON ANCIENTBRAIN WEBSITE).');
+        console.log('Puter.js loaded and ready.');
         updateSendButtonState();
         return true;
     }
@@ -614,6 +629,7 @@ welcomeStartBtn.addEventListener('click', () => {
     modelSelector.value = selectedModelValue;
     if (apiKeyValue)
         apiKey = apiKeyValue;
+
     closeWelcomeScreen();
 });
 
@@ -721,6 +737,20 @@ function updateGame() {
 
 initializeApp();
 
+// We display or hide the API key  section depending on user selection
+welcomeModelSelector.addEventListener('change', () => {
+    const welcomeApiSection = document.getElementById('welcome-api-section');
+    if (welcomeModelSelector.value === 'puter') {
+        welcomeApiSection.style.display = 'none';
+    } else {
+        welcomeApiSection.style.display = 'block';
+    }
+});
+
+if (welcomeModelSelector.value === 'puter') {
+    document.getElementById('welcome-api-section').style.display = 'none';
+}
+
 apiKeyInput.addEventListener('input', () => {
     setApiKeyBtn.disabled = !apiKeyInput.value.trim();
 });
@@ -776,7 +806,7 @@ async function sendPromptToAI() {
         return;
     }
 
-    // If Puter selected, we don't require an OpenAI API key -- again, this is only for local testing
+    // If Puter selected, we don't require an OpenAI API key
     const usePuter = selectedModel === 'puter' && (typeof PUTER_AVAILABLE === 'undefined' || PUTER_AVAILABLE);
     if (!usePuter && !apiKey) {
         console.log('Please set your OpenAI API key');
@@ -800,6 +830,9 @@ async function sendPromptToAI() {
         if (usePuter) {
             if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
                 throw new Error('Puter library not loaded or puter.ai.chat not available.');
+
+            await ensurePuterAuth();
+
             console.log('Sending request to Puter');
             const systemInstructions = discussionMode
                 ? `You are an AI assistant. Have natural conversations with the user. Answer questions, discuss topics, and be helpful. DO NOT generate code unless explicitly asked. Just chat naturally.`
@@ -1258,6 +1291,8 @@ Provide a comprehensive security report with specific line numbers for each issu
         if (usePuter) {
             if (typeof puter === 'undefined' || !puter.ai || !puter.ai.chat)
                 throw new Error('Puter library not loaded or puter.ai.chat not available.');
+
+            await ensurePuterAuth();
 
             const puterResult = await puter.ai.chat(securityPrompt);
 
